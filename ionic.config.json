@@ -1,0 +1,7 @@
+{
+  "name": "huntersurv-vue",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
