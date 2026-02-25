@@ -15,32 +15,44 @@
             @back="goTo('entry')"
             @signup="goTo('main')"
           />
-          <MainScreen
-            :active="screen === 'main'"
-            :challenges="challenges"
-            :inventory="inventory"
-            @navigate="goTo"
-          />
-          <StatsScreen
-            :active="screen === 'stats'"
-            :attributes="attributes"
-            :combat-stats="combatStats"
-          />
-          <TradesScreen
-            :active="screen === 'trades'"
-            :trade-tabs="tradeTabs"
-            v-model:tradeTab="tradeTab"
-            :filtered-trades="filteredTrades"
-          />
-          <ChatScreen
-            :active="screen === 'chat'"
-            v-model:chatTab="chatTab"
-            :chats="chats"
-          />
-          <ProfileScreen
-            :active="screen === 'profile'"
-            :inventory="inventory"
-          />
+
+          <div
+            v-if="showNav"
+            class="swipe-viewport"
+            @pointerdown="onPointerDown"
+            @pointerup="onPointerUp"
+            @pointercancel="onPointerCancel"
+          >
+            <div class="swipe-track" :style="trackStyle">
+              <MainScreen
+                :active="screen === 'main'"
+                :challenges="challenges"
+                :inventory="inventory"
+                @navigate="goTo"
+              />
+              <StatsScreen
+                :active="screen === 'stats'"
+                :attributes="attributes"
+                :combat-stats="combatStats"
+              />
+              <TradesScreen
+                :active="screen === 'trades'"
+                :trade-tabs="tradeTabs"
+                v-model:tradeTab="tradeTab"
+                :filtered-trades="filteredTrades"
+              />
+              <ChatScreen
+                :active="screen === 'chat'"
+                v-model:chatTab="chatTab"
+                :chats="chats"
+              />
+              <ProfileScreen
+                :active="screen === 'profile'"
+                :inventory="inventory"
+              />
+            </div>
+          </div>
+
           <NotificationsScreen
             :active="screen === 'notifications'"
             :notifications="notifications"
@@ -92,6 +104,10 @@ const pushNotifs = ref(false);
 const tradeTabs = ['All Items', 'Weapons', 'Armor', 'Other'];
 const navScreens = ['main', 'stats', 'trades', 'chat', 'profile'];
 const showNav = computed(() => navScreens.includes(screen.value));
+const navIndex = computed(() => Math.max(0, navScreens.indexOf(screen.value)));
+const trackStyle = computed(() => ({
+  transform: `translateX(-${navIndex.value * 100}%)`,
+}));
 
 const challenges = [
   { text: 'Kill 50 Werewolves', progress: 72 },
@@ -157,7 +173,39 @@ const notifications = [
   { title: 'Event Starting Soon', sub: 'The Blue Moon is rising soon...', time: '5h ago', unread: false },
 ];
 
+let startX = 0;
+let startY = 0;
+let tracking = false;
+
 const goTo = (next: string) => {
   screen.value = next;
+};
+
+const onPointerDown = (event: PointerEvent) => {
+  if (!showNav.value) {
+    return;
+  }
+  tracking = true;
+  startX = event.clientX;
+  startY = event.clientY;
+};
+
+const onPointerCancel = () => {
+  tracking = false;
+};
+
+const onPointerUp = (event: PointerEvent) => {
+  if (!tracking || !showNav.value) {
+    return;
+  }
+  tracking = false;
+  const deltaX = event.clientX - startX;
+  const deltaY = event.clientY - startY;
+  if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) {
+    return;
+  }
+  const direction = deltaX < 0 ? 1 : -1;
+  const nextIndex = Math.min(Math.max(navIndex.value + direction, 0), navScreens.length - 1);
+  screen.value = navScreens[nextIndex];
 };
 </script>
