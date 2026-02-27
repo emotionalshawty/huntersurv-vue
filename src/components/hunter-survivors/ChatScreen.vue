@@ -65,9 +65,9 @@ const emit = defineEmits<{
 }>();
 
 const currentUserId = '1';
-const selectedRoomId = ref('');
-const roomsLoaded = ref(true);
-const messagesLoaded = ref(true);
+const selectedRoomId = ref(props.chats[0] ? 'room_0' : '');
+const roomsLoaded = true;
+const messagesLoaded = true;
 
 const chatTheme = 'dark';
 const chatStyles = JSON.stringify({
@@ -229,158 +229,49 @@ const rooms = computed(() => {
   }));
 });
 
-// Message storage
-const messagesByRoom = ref<Record<string, any[]>>({
-  room_0: [
-    {
-      _id: '1',
-      indexId: 1,
-      content: 'The blood moon rises tonight. Perfect for hunting.',
-      senderId: 'user_0',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '2',
-      indexId: 2,
-      content: 'Indeed. I sensed the ancient power stirring.',
-      senderId: currentUserId,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '3',
-      indexId: 3,
-      content: 'Meet me at the old cathedral? The one in the Crimson District.',
-      senderId: 'user_0',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '4',
-      indexId: 4,
-      content: 'I know the place. What time?',
-      senderId: currentUserId,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '5',
-      indexId: 5,
-      content: 'Midnight. Come alone.',
-      senderId: 'user_0',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '6',
-      indexId: 6,
-      content: "There's something I need to show you about the ritual...",
-      senderId: 'user_0',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '7',
-      indexId: 7,
-      content: 'The ritual? I thought it was forbidden since the last council meeting.',
-      senderId: currentUserId,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '8',
-      indexId: 8,
-      content: "There's something I need to show you...",
-      senderId: 'user_0',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-  ],
-  room_1: [
-    {
-      _id: '9',
-      indexId: 1,
-      content: 'Meet me at the arena.',
-      senderId: 'user_1',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '10',
-      indexId: 2,
-      content: 'On my way.',
-      senderId: currentUserId,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-  ],
-  room_2: [
-    {
-      _id: '11',
-      indexId: 1,
-      content: "Wake up, we're here.",
-      senderId: 'user_2',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-  ],
-  room_3: [
-    {
-      _id: '12',
-      indexId: 1,
-      content: 'Ready for the raid?',
-      senderId: 'user_3',
-      username: 'Azura',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-    {
-      _id: '13',
-      indexId: 2,
-      content: 'Gearing up now.',
-      senderId: currentUserId,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-  ],
-  room_4: [
-    {
-      _id: '14',
-      indexId: 1,
-      content: 'Accept my trade offer, man.',
-      senderId: 'user_4',
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    },
-  ],
-});
+const userMessagesByRoom = ref<Record<string, Array<{ _id: string; content: string; senderId: string; timestamp: string }>>>({});
 
 const messages = computed(() => {
-  return messagesByRoom.value[selectedRoomId.value] || [];
+  if (!selectedRoomId.value) {
+    return [];
+  }
+
+  const roomIndex = Number(selectedRoomId.value.replace('room_', ''));
+  const chat = props.chats[roomIndex];
+
+  const previewMessage = chat
+    ? [{
+      _id: `preview-${selectedRoomId.value}`,
+      content: chat.preview,
+      senderId: `user_${roomIndex}`,
+      timestamp: chat.time,
+    }]
+    : [];
+
+  const userMessages = userMessagesByRoom.value[selectedRoomId.value] || [];
+  return [...previewMessage, ...userMessages];
 });
 
 const fetchMessages = ({ room }: any) => {
   selectedRoomId.value = room.roomId;
-  messagesLoaded.value = true;
 };
 
-let nextMessageId = 100;
+let nextMessageId = 1;
 const sendMessage = ({ content, roomId }: any) => {
-  if (!messagesByRoom.value[roomId]) {
-    messagesByRoom.value[roomId] = [];
+  if (!roomId || !content) {
+    return;
   }
-  
-  const newMessage = {
-    _id: String(nextMessageId++),
-    indexId: messagesByRoom.value[roomId].length + 1,
+
+  if (!userMessagesByRoom.value[roomId]) {
+    userMessagesByRoom.value[roomId] = [];
+  }
+
+  userMessagesByRoom.value[roomId].push({
+    _id: `m-${nextMessageId++}`,
     content,
     senderId: currentUserId,
-    timestamp: new Date().toISOString(),
-    date: new Date().toLocaleDateString(),
-  };
-  
-  messagesByRoom.value[roomId].push(newMessage);
+    timestamp: 'now',
+  });
 };
 
 const roomActionHandler = ({ action }: any) => {
