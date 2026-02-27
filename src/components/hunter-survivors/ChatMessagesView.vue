@@ -1,0 +1,352 @@
+<template>
+  <div class="messages-view">
+    <div class="messages-header">
+      <div class="back-btn" @click="emit('back')">
+        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </div>
+      <div class="header-avatar-wrapper">
+        <img :src="getAvatarUrl(selectedChat.name)" class="header-avatar" />
+      </div>
+      <div class="header-info">
+        <div class="header-name">{{ selectedChat.name }}</div>
+        <div class="header-status">
+          <span class="status-text">Online</span>
+          <span class="status-dot">·</span>
+          <span class="status-level">Level 164</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages-divider"></div>
+
+    <div class="messages-container" ref="messagesContainer">
+      <div class="date-separator">TODAY</div>
+
+      <div
+        v-for="msg in messages"
+        :key="msg.id"
+        :class="['message-wrapper', msg.isMine ? 'message-mine' : 'message-theirs']"
+      >
+        <div class="message-bubble">
+          {{ msg.text }}
+        </div>
+        <div class="message-time">{{ msg.time }}</div>
+      </div>
+    </div>
+
+    <div class="message-input-area">
+      <div class="input-wrapper">
+        <input
+          type="text"
+          :value="newMessage"
+          placeholder="Type a message..."
+          @input="onInput"
+          @keyup.enter="emit('send')"
+        />
+      </div>
+      <button class="send-btn" @click="emit('send')" :disabled="!newMessage.trim()">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { nextTick, ref, watch } from 'vue';
+
+type ChatEntry = {
+  name: string;
+  preview: string;
+  time: string;
+  badge: number;
+  unread: boolean;
+  icon: string;
+};
+
+type ChatMessage = {
+  id: number;
+  text: string;
+  time: string;
+  isMine: boolean;
+};
+
+const props = defineProps<{
+  selectedChat: ChatEntry;
+  messages: ChatMessage[];
+  newMessage: string;
+  getAvatarUrl: (name: string) => string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'back'): void;
+  (e: 'send'): void;
+  (e: 'update:newMessage', value: string): void;
+}>();
+
+const messagesContainer = ref<HTMLElement | null>(null);
+
+const onInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emit('update:newMessage', target.value);
+};
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
+  });
+};
+
+watch(
+  () => props.messages,
+  () => {
+    scrollToBottom();
+  },
+  { deep: true, immediate: true },
+);
+</script>
+
+<style scoped>
+.messages-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-header {
+  display: grid;
+  grid-template-columns: 34px 48px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 16px;
+  padding: 16px 24px;
+  background: #050101;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.back-btn {
+  color: #ff2a2a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  width: 34px;
+  height: 34px;
+}
+
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.header-avatar-wrapper {
+  grid-column: 2;
+  width: 48px;
+  height: 48px;
+}
+
+.header-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #3a0a0a;
+  object-fit: cover;
+  background: #1a0505;
+}
+
+.header-info {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 2px;
+}
+
+.header-name {
+  font-family: var(--font-title, serif);
+  font-size: 20px;
+  color: #e0c0c0;
+  margin-bottom: 2px;
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-status {
+  font-size: 13px;
+  color: #8a2b2b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-text {
+  color: #a03a3a;
+}
+
+@media (max-width: 420px) {
+  .messages-header {
+    grid-template-columns: 30px 44px minmax(0, 1fr);
+    column-gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .back-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .back-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-avatar-wrapper,
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-name {
+    font-size: 18px;
+  }
+}
+
+.messages-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+  margin: 0;
+  opacity: 0.7;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+.date-separator {
+  text-align: center;
+  color: #a01a1a;
+  font-size: 14px;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  max-width: 80%;
+}
+
+.message-mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-theirs {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.message-theirs .message-bubble {
+  background: #050101;
+  border: 1px solid #5a1a1a;
+  color: #e0a0a0;
+  border-bottom-left-radius: 4px;
+}
+
+.message-mine .message-bubble {
+  background: #3a0a0a;
+  color: #f0e0e0;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #5a1a1a;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.message-input-area {
+  position: sticky;
+  bottom: calc(64px + env(safe-area-inset-bottom));
+  z-index: 5;
+  padding: 16px 24px;
+  padding-bottom: 16px;
+  background: #050101;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-wrapper {
+  flex: 1;
+  background: #050101;
+  border: 1px solid #8a2b2b;
+  border-radius: 24px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ff2a2a;
+  font-size: 16px;
+  padding: 12px 0;
+  outline: none;
+}
+
+.input-wrapper input::placeholder {
+  color: #8a2b2b;
+}
+
+.send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ff2a2a;
+  color: #050101;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #ff2a2a;
+}
+
+.send-btn:disabled {
+  background: #3a0a0a;
+  color: #1a0505;
+  cursor: not-allowed;
+}
+</style>

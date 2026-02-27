@@ -1,6 +1,6 @@
 <template>
   <ion-page class="hs-page">
-    <ion-content class="hs-content hs-chat-content">
+    <ion-content :scroll-y="false" class="hs-content hs-chat-content">
       <ion-grid class="hs-grid">
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="10" size-lg="8" size-xl="6" class="hs-col">

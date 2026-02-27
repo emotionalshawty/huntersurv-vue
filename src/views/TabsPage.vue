@@ -44,10 +44,23 @@ import {
 <style>
 .hs-tab-bar {
   --background: #080404;
-  --border: #3a0d0d;
-  border-top: 1px solid #3a0d0d;
+  --border: transparent;
+  border-top: none;
   padding: 6px 8px 10px;
   height: 64px;
+  position: relative;
+}
+
+.hs-tab-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.82) 50%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .hs-tab-bar ion-tab-button {
