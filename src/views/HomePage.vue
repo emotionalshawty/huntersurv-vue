@@ -79,7 +79,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { IonContent, IonPage } from '@ionic/vue';
-import '../theme/hunter-survivors.css';
 
 import BottomNav from '../components/hunter-survivors/BottomNav.vue';
 import ChatScreen from '../components/hunter-survivors/ChatScreen.vue';

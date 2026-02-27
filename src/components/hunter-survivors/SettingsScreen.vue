@@ -49,3 +49,95 @@ const emit = defineEmits<{
   (e: 'back'): void;
 }>();
 </script>
+
+<style>
+.settings-page {
+  overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+.settings-page::-webkit-scrollbar {
+  display: none;
+}
+
+.settings-section-label {
+  font-size: 16px;
+  color: white;
+  padding: 14px 20px 8px;
+}
+
+.settings-group {
+  margin: 0 20px 16px;
+  border: 1px solid #270708;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #0f0808;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.toggle {
+  width: 50px;
+  height: 26px;
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.toggle.on {
+  background: var(--purple);
+}
+
+.toggle.off {
+  background: #1a0808;
+}
+
+.toggle.red-on {
+  background: var(--red-dark);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  transition: left 0.25s;
+}
+
+.toggle.on .toggle-knob,
+.toggle.red-on .toggle-knob {
+  left: 27px;
+}
+
+.toggle.off .toggle-knob {
+  left: 3px;
+}
+
+.settings-header {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.settings-back {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 22px;
+  cursor: pointer;
+}
+</style>
