@@ -90,6 +90,20 @@ const visibleTrades = computed(() => {
   background: #050101;
 }
 
+.trades-page .page-header {
+  border-bottom: 1px solid #2a0808;
+}
+
+.trades-page .page-header-title {
+  color: #ff2a2a;
+}
+
+.trades-page .page-header-sub {
+  font-family: var(--font-title);
+  font-size: 15px;
+  color: #b84a4a;
+}
+
 .trades-page::-webkit-scrollbar {
   display: none;
 }
@@ -146,17 +160,29 @@ const visibleTrades = computed(() => {
 
 .tab-row {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
   border-bottom: 1px solid #2f0909;
   padding: 0 18px;
   background: #050101;
+}
+
+.tab-row::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-item {
   font-family: var(--font-title);
   font-size: 18px;
   color: #b14646;
-  padding: 8px 4px 10px;
+  flex: 0 0 auto;
+  min-width: 120px;
+  text-align: center;
+  padding: 8px 10px 10px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
