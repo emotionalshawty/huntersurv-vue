@@ -49,14 +49,15 @@ body,
 .hs-col {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
 }
 
 .screen {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  flex: 1;
+  min-height: 0;
   transition: opacity 0.25s;
 }
 
