@@ -115,9 +115,13 @@ watch(
 
 <style scoped>
 .messages-view {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1px minmax(0, 1fr) auto;
   height: 100%;
+  min-height: 0;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .messages-header {
@@ -230,12 +234,16 @@ watch(
 }
 
 .messages-container {
-  flex: 1;
   overflow-y: auto;
+  height: 100%;
+  max-height: 100%;
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .date-separator {
@@ -291,11 +299,9 @@ watch(
 }
 
 .message-input-area {
-  position: sticky;
-  bottom: calc(64px + env(safe-area-inset-bottom));
   z-index: 5;
   padding: 16px 24px;
-  padding-bottom: 16px;
+  padding-bottom: 14px;
   background: #050101;
   display: flex;
   align-items: center;
@@ -317,8 +323,8 @@ watch(
   background: transparent;
   border: none;
   color: #ff2a2a;
-  font-size: 16px;
-  padding: 12px 0;
+  font-size: 18px;
+  padding: 14px 0;
   outline: none;
 }
 

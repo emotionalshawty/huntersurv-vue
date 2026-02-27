@@ -107,6 +107,7 @@ const sendMessage = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
   background: #050101;
   color: #fff;
