@@ -1,6 +1,6 @@
 <template>
   <ion-page class="hs-page">
-    <ion-content :fullscreen="true" class="hs-content">
+    <ion-content class="hs-content hs-chat-content">
       <ion-grid class="hs-grid">
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="10" size-lg="8" size-xl="6" class="hs-col">
@@ -19,3 +19,10 @@ import { useHunterData } from '../../composables/useHunterData';
 
 const { chatTab, chats } = useHunterData();
 </script>
+
+<style>
+.hs-chat-content {
+  --padding-bottom: 0px;
+  --background: #050101;
+}
+</style>

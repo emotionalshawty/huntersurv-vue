@@ -1,51 +1,136 @@
 <template>
   <div :class="['screen', 'chat-page', { active: active }]">
-    <div class="page-header">
-      <div class="page-header-title">Hunter's Whispers</div>
-      <div class="page-header-sub">Interact with other damned</div>
-    </div>
-    <div class="chat-tabs">
-      <div
-        :class="['chat-tab', { active: chatTab === 'Chats' }]"
-        @click="emit('update:chatTab', 'Chats')"
-      >
-        Chats
+    <!-- Social Tab View (List) -->
+    <template v-if="!selectedChat">
+      <div class="page-header">
+        <div class="page-header-title">Hunter's whispers</div>
+        <div class="page-header-sub">Interact with other damned</div>
       </div>
-      <div
-        :class="['chat-tab', { active: chatTab === 'Trades' }]"
-        @click="emit('update:chatTab', 'Trades')"
-      >
-        Trades
+      
+      <div class="chat-tabs">
+        <div
+          :class="['chat-tab', { active: chatTab === 'Chats' }]"
+          @click="emit('update:chatTab', 'Chats')"
+        >
+          Chats
+        </div>
+        <div
+          :class="['chat-tab', { active: chatTab === 'Trades' }]"
+          @click="emit('update:chatTab', 'Trades')"
+        >
+          Trades
+        </div>
       </div>
-    </div>
-    <div class="chat-container">
-      <vue-advanced-chat
-        :current-user-id="currentUserId"
-        :rooms="JSON.stringify(rooms)"
-        :messages="JSON.stringify(messages)"
-        :rooms-loaded="roomsLoaded"
-        :messages-loaded="messagesLoaded"
-        :room-id="selectedRoomId"
-        :theme="chatTheme"
-        :styles="chatStyles"
-        :text-messages="textMessages"
-        :show-audio="false"
-        :show-files="false"
-        :show-emojis="true"
-        :show-reaction-emojis="true"
-        :show-new-messages-divider="false"
-        @fetch-messages="fetchMessages"
-        @send-message="sendMessage"
-        @room-action-handler="roomActionHandler"
-      />
-    </div>
+      
+      <div class="chat-list-container">
+        <div class="chat-list">
+          <div 
+            v-for="(chat, index) in chats" 
+            :key="index"
+            class="chat-item"
+            @click="openChat(chat)"
+          >
+            <div class="chat-avatar-wrapper">
+              <img :src="getAvatarUrl(chat.name)" class="chat-avatar" />
+              <div v-if="chat.unread" class="online-dot"></div>
+            </div>
+            <div class="chat-info">
+              <div class="chat-name">{{ chat.name }}</div>
+              <div class="chat-preview">{{ chat.preview }}</div>
+            </div>
+            <div class="chat-meta">
+              <div class="chat-time">{{ chat.time }}</div>
+              <div v-if="chat.badge" class="chat-badge">{{ chat.badge }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn">ADD FRIENDS</button>
+          <button class="action-btn">CREATE CHAT</button>
+        </div>
+
+        <div class="map-section">
+          <div class="map-title">Community Map</div>
+          <div class="map-container">
+            <!-- Using a placeholder map image that looks like the one in the screenshot -->
+            <img src="https://images.uesp.net/d/df/TR3-map-Morrowind.png" alt="Map" class="map-image" @error="handleImageError" />
+            <div class="map-fallback" v-if="mapError">
+              <div class="map-grid">
+                <div class="map-marker red-square" style="top: 30%; left: 70%;"></div>
+                <div class="map-marker red-square" style="top: 50%; left: 55%;"></div>
+                <div class="map-marker red-triangle" style="top: 85%; left: 45%;"></div>
+                <div class="map-marker red-triangle" style="top: 85%; left: 85%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Chat Messages View -->
+    <template v-else>
+      <div class="messages-view">
+        <div class="messages-header">
+          <div class="back-btn" @click="closeChat">
+            <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </div>
+          <div class="header-avatar-wrapper">
+            <img :src="getAvatarUrl(selectedChat.name)" class="header-avatar" />
+          </div>
+          <div class="header-info">
+            <div class="header-name">{{ selectedChat.name }}</div>
+            <div class="header-status">
+              <span class="status-text">Online</span>
+              <span class="status-dot">·</span>
+              <span class="status-level">Level 164</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="messages-divider"></div>
+
+        <div class="messages-container" ref="messagesContainer">
+          <div class="date-separator">TODAY</div>
+          
+          <div 
+            v-for="msg in currentMessages" 
+            :key="msg.id"
+            :class="['message-wrapper', msg.isMine ? 'message-mine' : 'message-theirs']"
+          >
+            <div class="message-bubble">
+              {{ msg.text }}
+            </div>
+            <div class="message-time">{{ msg.time }}</div>
+          </div>
+        </div>
+
+        <div class="message-input-area">
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              v-model="newMessage" 
+              placeholder="Type a message..." 
+              @keyup.enter="sendMessage"
+            />
+          </div>
+          <button class="send-btn" @click="sendMessage" :disabled="!newMessage.trim()">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { register } from 'vue-advanced-chat';
-register();
+import { ref, nextTick, watch } from 'vue';
 
 const props = defineProps<{
   active: boolean;
@@ -64,249 +149,116 @@ const emit = defineEmits<{
   (e: 'update:chatTab', value: string): void;
 }>();
 
-const currentUserId = '1';
-const selectedRoomId = ref(props.chats[0] ? 'room_0' : '');
-const roomsLoaded = true;
-const messagesLoaded = true;
+const selectedChat = ref<any>(null);
+const newMessage = ref('');
+const messagesContainer = ref<HTMLElement | null>(null);
+const mapError = ref(true); // Default to fallback map
 
-const chatTheme = 'dark';
-const chatStyles = JSON.stringify({
-  general: {
-    color: '#f2dede',
-    colorSpinner: '#ff2a2a',
-    borderStyle: '1px solid #2a0808',
-  },
-  container: {
-    borderRadius: '0',
-  },
-  header: {
-    background: 'transparent',
-    colorRoomName: '#ff6b6b',
-    colorRoomInfo: '#888',
-  },
-  footer: {
-    background: 'transparent',
-    borderStyleInput: '1px solid #5b1414',
-    borderInputSelected: '1px solid #ff2a2a',
-    backgroundInput: '#0b0505',
-    backgroundReply: '#1a0a0a',
-  },
-  content: {
-    background: 'transparent',
-  },
-  sidemenu: {
-    background: 'transparent',
-    backgroundHover: '#1a0a0a',
-    backgroundActive: '#2a0808',
-    colorActive: '#ff2a2a',
-  },
-  dropdown: {
-    background: '#0b0505',
-    backgroundHover: '#1a0a0a',
-  },
-  message: {
-    background: '#0b0505',
-    backgroundMe: '#5b1414',
-    color: '#f2dede',
-    colorStarted: '#9e9e9e',
-    backgroundDeleted: '#1a0a0a',
-    backgroundSelected: '#2a0808',
-    colorDeleted: '#888',
-    colorUsername: '#ff6b6b',
-    colorTimestamp: '#888',
-    backgroundDate: 'transparent',
-    colorDate: '#ff2a2a',
-    backgroundSystem: 'transparent',
-    colorSystem: '#888',
-    backgroundMedia: 'rgba(0, 0, 0, 0.15)',
-    backgroundReply: 'rgba(0, 0, 0, 0.18)',
-    colorReplyUsername: '#ff6b6b',
-    colorReply: '#d6d6d6',
-    colorTag: '#ff2a2a',
-    backgroundImage: '#1a0a0a',
-    colorNewMessages: '#ff2a2a',
-    backgroundScrollCounter: '#ff2a2a',
-    colorScrollCounter: '#fff',
-    backgroundReaction: '#1a0a0a',
-    borderStyleReaction: '1px solid #2a0808',
-    backgroundReactionHover: '#2a0808',
-    colorReactionCounter: '#888',
-    backgroundReactionMe: '#5b1414',
-    backgroundReactionHoverMe: '#7a1414',
-    colorReactionCounterMe: '#f2dede',
-    backgroundAudioRecord: '#1a0a0a',
-    backgroundAudioLine: 'rgba(255, 42, 42, 0.15)',
-    backgroundAudioProgress: '#ff2a2a',
-    backgroundAudioProgressSelector: '#ff6b6b',
-  },
-  room: {
-    colorUsername: '#f2dede',
-    colorMessage: '#888',
-    colorTimestamp: '#666',
-    colorStateOnline: '#4caf50',
-    colorStateOffline: '#888',
-    backgroundCounterBadge: '#ff2a2a',
-    colorCounterBadge: '#fff',
-    backgroundHover: '#1a0a0a',
-    backgroundActive: '#2a0808',
-  },
-  emoji: {
-    background: '#0b0505',
-  },
-  icons: {
-    search: '#888',
-    add: '#ff2a2a',
-    toggle: '#888',
-    menu: '#888',
-    close: '#888',
-    closeImage: '#fff',
-    file: '#888',
-    paperclip: '#888',
-    closeOutline: '#888',
-    closePreview: '#fff',
-    send: '#ff2a2a',
-    sendDisabled: '#888',
-    emoji: '#888',
-    emojiReaction: 'rgba(255, 42, 42, 0.8)',
-    document: '#888',
-    pencil: '#888',
-    checkmark: '#4caf50',
-    checkmarkSeen: '#4caf50',
-    eye: '#888',
-    dropdownMessage: '#888',
-    dropdownMessageBackground: 'transparent',
-    dropdownRoom: '#888',
-    dropdownScroll: '#888',
-    microphone: '#ff2a2a',
-    audioStop: '#ff2a2a',
-    audioPause: '#888',
-    audioPlay: '#888',
-    audioCancel: '#888',
-    audioConfirm: '#ff2a2a',
-  },
-});
-
-const textMessages = JSON.stringify({
-  ROOMS_EMPTY: 'No chats yet',
-  ROOM_EMPTY: 'No chat selected',
-  NEW_MESSAGES: 'New Messages',
-  MESSAGE_DELETED: 'This message was deleted',
-  MESSAGES_EMPTY: 'No messages',
-  CONVERSATION_STARTED: 'Conversation started',
-  TYPE_MESSAGE: 'Type a message...',
-  SEARCH: 'Search',
-  IS_ONLINE: 'is online',
-  LAST_SEEN: 'last seen ',
-  IS_TYPING: 'is typing...',
-  CANCEL_SELECT_MESSAGE: 'Cancel',
-});
-
-// Convert chats to rooms format
-const rooms = computed(() => {
-  return props.chats.map((chat, index) => ({
-    roomId: `room_${index}`,
-    roomName: chat.name,
-    avatar: chat.icon,
-    unreadCount: chat.badge,
-    lastMessage: {
-      content: chat.preview,
-      timestamp: chat.time,
-    },
-    users: [
-      {
-        _id: currentUserId,
-        username: 'You',
-      },
-      {
-        _id: `user_${index}`,
-        username: chat.name,
-        avatar: chat.icon,
-        status: {
-          state: chat.unread ? 'online' : 'offline',
-        },
-      },
-    ],
-  }));
-});
-
-const userMessagesByRoom = ref<Record<string, Array<{ _id: string; content: string; senderId: string; timestamp: string }>>>({});
-
-const messages = computed(() => {
-  if (!selectedRoomId.value) {
-    return [];
-  }
-
-  const roomIndex = Number(selectedRoomId.value.replace('room_', ''));
-  const chat = props.chats[roomIndex];
-
-  const previewMessage = chat
-    ? [{
-      _id: `preview-${selectedRoomId.value}`,
-      content: chat.preview,
-      senderId: `user_${roomIndex}`,
-      timestamp: chat.time,
-    }]
-    : [];
-
-  const userMessages = userMessagesByRoom.value[selectedRoomId.value] || [];
-  return [...previewMessage, ...userMessages];
-});
-
-const fetchMessages = ({ room }: any) => {
-  selectedRoomId.value = room.roomId;
+const handleImageError = () => {
+  mapError.value = true;
 };
 
-let nextMessageId = 1;
-const sendMessage = ({ content, roomId }: any) => {
-  if (!roomId || !content) {
-    return;
-  }
+// Mock messages for the specific chat in the screenshot
+const mockMessages = [
+  { id: 1, text: 'The blood moon rises tonight. Perfect for hunting.', time: '22:23', isMine: false },
+  { id: 2, text: 'Indeed. I sensed the ancient power stirring.', time: '22:23', isMine: true },
+  { id: 3, text: 'Meet me at the old cathedral? The one in the Crimson District.', time: '22:25', isMine: false },
+  { id: 4, text: 'I know the place. What time?', time: '22:27', isMine: true },
+  { id: 5, text: 'Midnight. Come alone.', time: '22:30', isMine: false },
+  { id: 6, text: 'There\'s something I need to show you about the ritual...', time: '22:31', isMine: false },
+  { id: 7, text: 'The ritual? I thought it was forbidden since the last council meeting.', time: '22:33', isMine: true },
+];
 
-  if (!userMessagesByRoom.value[roomId]) {
-    userMessagesByRoom.value[roomId] = [];
-  }
+const currentMessages = ref([...mockMessages]);
 
-  userMessagesByRoom.value[roomId].push({
-    _id: `m-${nextMessageId++}`,
-    content,
-    senderId: currentUserId,
-    timestamp: 'now',
+const getAvatarUrl = (name: string) => {
+  // Generate a consistent avatar based on the name
+  const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=1a0505`;
+};
+
+const openChat = (chat: any) => {
+  selectedChat.value = chat;
+  // Reset messages to mock for demo
+  currentMessages.value = [...mockMessages];
+  scrollToBottom();
+};
+
+const closeChat = () => {
+  selectedChat.value = null;
+};
+
+const sendMessage = () => {
+  if (!newMessage.value.trim()) return;
+  
+  const now = new Date();
+  const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+  currentMessages.value.push({
+    id: Date.now(),
+    text: newMessage.value,
+    time: timeString,
+    isMine: true
+  });
+  
+  newMessage.value = '';
+  scrollToBottom();
+};
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
   });
 };
 
-const roomActionHandler = ({ action }: any) => {
-  if (action.name === 'inviteUser') {
-    // Handle invite
-  } else if (action.name === 'removeUser') {
-    // Handle remove
-  } else if (action.name === 'deleteRoom') {
-    // Handle delete
-  }
-};
+watch(currentMessages, () => {
+  scrollToBottom();
+}, { deep: true });
 </script>
 
-<style>
+<style scoped>
 .chat-page {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  padding-bottom: 0;
-  background: radial-gradient(circle at 50% -10%, rgba(130, 0, 0, 0.35), transparent 45%),
-    linear-gradient(180deg, #050101 0%, #0b0505 40%, #050101 100%);
+  background: #050101;
+  color: #fff;
+  font-family: var(--font-body, sans-serif);
+}
+
+/* --- Social Tab View --- */
+.page-header {
+  padding: 39px 24px 0;
+  border-bottom: 1px solid #1a0808;
+  padding-bottom: 16px;
+}
+
+.page-header-title {
+  font-family: var(--font-title, serif);
+  font-size: 26px;
+  color: #ff2a2a;
+}
+
+.page-header-sub {
+  font-size: 14px;
+  color: #8a2b2b;
+  margin-top: 4px;
 }
 
 .chat-tabs {
   display: flex;
   border-bottom: 1px solid #1a0808;
-  padding: 0 35px;
+  padding: 0 24px;
   flex-shrink: 0;
 }
 
 .chat-tab {
-  font-size: 16px;
-  color: #555;
-  padding: 8px 0;
+  font-size: 20px;
+  color: #8a2b2b;
+  padding: 12px 0;
   margin-right: 40px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
@@ -315,276 +267,438 @@ const roomActionHandler = ({ action }: any) => {
 }
 
 .chat-tab.active {
-  color: white;
-  border-bottom-color: var(--red);
+  color: #ff2a2a;
 }
 
-.chat-container {
+.chat-list-container {
   flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-/* Vue Advanced Chat Custom Styling */
-.chat-container >>> .vac-card-window {
+.chat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid #1a0808;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chat-item:hover {
+  background: rgba(255, 42, 42, 0.05);
+}
+
+.chat-avatar-wrapper {
+  position: relative;
+  margin-right: 16px;
+}
+
+.chat-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid #3a0a0a;
+  object-fit: cover;
+  background: #1a0505;
+}
+
+.online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: #ff2a2a;
+  border-radius: 50%;
+  border: 2px solid #050101;
+}
+
+.chat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-name {
+  font-family: var(--font-title, serif);
+  font-size: 18px;
+  color: #e0c0c0;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-preview {
+  font-size: 13px;
+  color: #8a2b2b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 12px;
+}
+
+.chat-time {
+  font-size: 12px;
+  color: #8a2b2b;
+  margin-bottom: 6px;
+}
+
+.chat-badge {
+  background: #ff2a2a;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+}
+
+.action-btn {
+  flex: 1;
+  background: #a01a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 0;
+  font-size: 16px;
+  font-family: var(--font-title, serif);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.action-btn:hover {
+  background: #c02a2a;
+}
+
+.map-section {
+  padding: 0 24px 24px;
+}
+
+.map-title {
+  font-family: var(--font-title, serif);
+  font-size: 20px;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.map-container {
+  width: 100%;
+  height: 200px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  background: #8cb4c4; /* Water color */
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #d4c4a8; /* Land color */
+}
+
+.map-grid {
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+}
+
+.map-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.red-square {
+  width: 12px;
+  height: 12px;
+  background: #ff2a2a;
+  border: 1px solid white;
+}
+
+.red-triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid #ff2a2a;
+}
+
+.red-triangle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-bottom-color: rgba(255,255,255,0.5);
+}
+
+/* --- Chat Messages View --- */
+.messages-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-header {
+  display: grid;
+  grid-template-columns: 34px 48px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 16px;
+  padding: 16px 24px;
+  background: #050101;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.back-btn {
+  color: #ff2a2a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  width: 34px;
+  height: 34px;
+}
+
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.header-avatar-wrapper {
+  grid-column: 2;
+  width: 48px;
+  height: 48px;
+}
+
+.header-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #3a0a0a;
+  object-fit: cover;
+  background: #1a0505;
+}
+
+.header-info {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 2px;
+}
+
+.header-name {
+  font-family: var(--font-title, serif);
+  font-size: 20px;
+  color: #e0c0c0;
+  margin-bottom: 2px;
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-status {
+  font-size: 13px;
+  color: #8a2b2b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-text {
+  color: #a03a3a;
+}
+
+@media (max-width: 420px) {
+  .messages-header {
+    grid-template-columns: 30px 44px minmax(0, 1fr);
+    column-gap: 14px;
+    padding: 14px 16px;
+  }
+
+  .back-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .back-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-avatar-wrapper,
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-name {
+    font-size: 18px;
+  }
+}
+
+.messages-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+  margin: 0;
+  opacity: 0.7;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-separator {
+  text-align: center;
+  color: #a01a1a;
+  font-size: 14px;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  max-width: 80%;
+}
+
+.message-mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-theirs {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.message-theirs .message-bubble {
+  background: #050101;
+  border: 1px solid #5a1a1a;
+  color: #e0a0a0;
+  border-bottom-left-radius: 4px;
+}
+
+.message-mine .message-bubble {
+  background: #3a0a0a;
+  color: #f0e0e0;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #5a1a1a;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.message-input-area {
+  padding: 16px 24px;
+  background: #050101;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-wrapper {
+  flex: 1;
+  background: #050101;
+  border: 1px solid #8a2b2b;
+  border-radius: 24px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
   background: transparent;
   border: none;
-  box-shadow: none;
-}
-
-.chat-container >>> .vac-rooms-container {
-  background: transparent;
-  border-right: 1px solid #1a0808;
-}
-
-.chat-container >>> .vac-room-item {
-  background: transparent;
-  border-bottom: 1px solid #0f0808;
-  padding: 12px 16px;
-}
-
-.chat-container >>> .vac-room-item:hover {
-  background: rgba(81, 17, 30, 0.1);
-}
-
-.chat-container >>> .vac-room-item.vac-room-selected {
-  background: rgba(81, 17, 30, 0.22);
-}
-
-.chat-container >>> .vac-room-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6b0000, #2d0030);
-  border: 2px solid #350507;
-  font-size: 22px;
-}
-
-.chat-container >>> .vac-room-name {
-  font-size: 15px;
-  color: white;
-  font-family: var(--font-body);
-}
-
-.chat-container >>> .vac-text-last {
-  font-size: 12px;
-  color: #666;
-}
-
-.chat-container >>> .vac-text-date {
-  font-size: 11px;
-  color: #555;
-}
-
-.chat-container >>> .vac-badge-counter {
-  background: var(--red);
-  color: white;
-  font-size: 11px;
-}
-
-.chat-container >>> .vac-room-unread {
-  background: var(--red);
-}
-
-.chat-container >>> .vac-room-header {
-  background: transparent;
-  border-bottom: 1px solid #2a0808;
-  padding: 18px 16px 14px;
-}
-
-.chat-container >>> .vac-room-name {
+  color: #ff2a2a;
   font-size: 16px;
-  color: #f5d7d7;
-  letter-spacing: 0.2px;
-  font-family: var(--font-body);
+  padding: 12px 0;
+  outline: none;
 }
 
-.chat-container >>> .vac-room-info {
-  font-size: 12px;
-  color: #b14a4a;
+.input-wrapper input::placeholder {
+  color: #8a2b2b;
 }
 
-.chat-container >>> .vac-room-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 20%, #b40d0d, #320505 70%);
-  border: 2px solid #3b0b0b;
-  font-size: 18px;
-}
-
-.chat-container >>> .vac-container-scroll {
-  background: transparent;
-  padding: 20px 16px 10px;
-}
-
-.chat-container >>> .vac-message-wrapper {
-  margin-bottom: 14px;
-}
-
-.chat-container >>> .vac-message-box {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-size: 14px;
-  line-height: 1.35;
-  box-shadow: 0 10px 24px -16px rgba(196, 13, 13, 0.6);
-  font-family: var(--font-body);
-}
-
-.chat-container >>> .vac-message-box.vac-message-me {
-  background: linear-gradient(135deg, rgba(80, 10, 10, 0.95), rgba(40, 5, 5, 0.95));
-  color: #f5e7e7;
-  border: 1px solid #651616;
-}
-
-.chat-container >>> .vac-message-box.vac-message-them {
-  background: rgba(14, 6, 6, 0.95);
-  color: #e6baba;
-  border: 1px solid #3a0d0d;
-}
-
-.chat-container >>> .vac-text-timestamp {
-  font-size: 10px;
-  color: #7a4b4b;
-  margin-top: 6px;
-}
-
-.chat-container >>> .vac-message-them .vac-text-timestamp {
-  color: #6a3a3a;
-}
-
-.chat-container >>> .vac-text-date-new {
-  color: #7a2323;
-  letter-spacing: 3px;
-  font-size: 12px;
-  border: 1px solid rgba(122, 35, 35, 0.5);
-  border-radius: 999px;
-  background: rgba(30, 7, 7, 0.8);
-  padding: 4px 10px;
-  font-family: var(--font-caps);
-}
-
-.chat-container >>> .vac-room-footer {
-  background: transparent;
-  border-top: 1px solid #2a0808;
-  padding: 14px 16px;
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
-}
-
-.chat-container >>> .vac-box-footer {
-  background: #0b0505;
-  border: 1px solid #5b1414;
-  border-radius: 999px;
-}
-
-.chat-container >>> .vac-box-footer:focus-within {
-  border-color: #ff2a2a;
-}
-
-.chat-container >>> .vac-textarea {
-  background: transparent;
-  color: #f2dede;
-  font-family: var(--font-body);
-  font-size: 14px;
-  padding: 0 16px;
-  min-height: 44px;
-  line-height: 44px;
-}
-
-.chat-container >>> .vac-textarea::placeholder {
-  color: #666;
-}
-
-.chat-container >>> .vac-icon-send {
+.send-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid #7a1414;
-  background: radial-gradient(circle at 30% 30%, #ff2a2a, #8c0a0a 70%);
-  box-shadow: 0 12px 22px -14px rgba(196, 13, 13, 0.8);
-  margin: 0;
+  background: #ff2a2a;
+  color: #050101;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.chat-container >>> .vac-icon-send svg {
-  color: white;
+.send-btn:hover:not(:disabled) {
+  background: #ff2a2a;
 }
 
-.chat-container >>> .vac-icon-send:hover {
-  opacity: 0.9;
-}
-
-.chat-container >>> .vac-svg-button {
-  color: #888;
-}
-
-.chat-container >>> .vac-svg-button:hover {
-  color: #ff2a2a;
-}
-
-.chat-container >>> .vac-icon-emoji {
-  color: #888;
-}
-
-.chat-container >>> .vac-icon-emoji:hover {
-  color: #ff2a2a;
-}
-
-.chat-container >>> .vac-emoji-wrapper {
-  background: #0b0505;
-  border: 1px solid #2a0808;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-}
-
-.chat-container >>> .vac-room-name {
-  font-weight: 500;
-}
-
-.chat-container >>> .vac-room-options {
-  color: #888;
-}
-
-.chat-container >>> .vac-room-options:hover {
-  color: #ff2a2a;
-}
-
-.chat-container >>> .vac-menu-options {
-  background: #0b0505;
-  border: 1px solid #2a0808;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-}
-
-.chat-container >>> .vac-menu-list {
-  color: #f2dede;
-}
-
-.chat-container >>> .vac-menu-item:hover {
-  background: #1a0a0a;
-}
-
-.chat-container >>> .vac-rooms-search {
-  background: transparent;
-  border-bottom: 1px solid #1a0808;
-  padding: 12px 16px;
-}
-
-.chat-container >>> .vac-input-search {
-  background: #0b0505;
-  border: 1px solid #5b1414;
-  border-radius: 999px;
-  color: #f2dede;
-  padding: 8px 16px;
-  font-family: var(--font-body);
-}
-
-.chat-container >>> .vac-input-search::placeholder {
-  color: #666;
-}
-
-.chat-container >>> .vac-input-search:focus {
-  border-color: #ff2a2a;
+.send-btn:disabled {
+  background: #3a0a0a;
+  color: #1a0505;
+  cursor: not-allowed;
 }
 </style>
