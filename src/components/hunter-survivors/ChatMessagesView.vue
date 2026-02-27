@@ -119,7 +119,7 @@ watch(
   grid-template-rows: auto 1px minmax(0, 1fr) auto;
   height: 100%;
   min-height: 0;
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -300,20 +300,20 @@ watch(
 
 .message-input-area {
   z-index: 5;
-  padding: 16px 24px;
-  padding-bottom: 14px;
+  padding: 8px 24px;
+  padding-bottom: 8px;
   background: #050101;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .input-wrapper {
   flex: 1;
   background: #050101;
   border: 1px solid #8a2b2b;
-  border-radius: 24px;
-  padding: 0 16px;
+  border-radius: 16px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
 }
@@ -323,8 +323,9 @@ watch(
   background: transparent;
   border: none;
   color: #ff2a2a;
-  font-size: 18px;
-  padding: 14px 0;
+  font-size: 16px;
+  padding: 8px 0;
+  line-height: 1.2;
   outline: none;
 }
 
@@ -333,8 +334,8 @@ watch(
 }
 
 .send-btn {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: #ff2a2a;
   color: #050101;
