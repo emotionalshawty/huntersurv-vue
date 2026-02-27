@@ -4,37 +4,57 @@
       <div class="page-header-title">Blood Market</div>
       <div class="page-header-sub">Trade weapons and resources</div>
     </div>
+
     <div class="search-bar">
-      <span>🔍</span>
-      <input type="text" placeholder="Search for items" />
+      <svg viewBox="0 0 24 24" class="search-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input v-model="searchQuery" type="text" placeholder="Search for items" />
     </div>
+
     <div class="wallet-bar">
       <div class="wallet-label">Your Coins</div>
       <div class="wallet-amount">2,847</div>
     </div>
+
     <div class="tab-row">
       <div
-        v-for="t in tradeTabs"
-        :key="t"
-        :class="['tab-item', { active: tradeTab === t }]"
-        @click="emit('update:tradeTab', t)"
+        v-for="tab in tradeTabs"
+        :key="tab"
+        :class="['tab-item', { active: tradeTab === tab }]"
+        @click="emit('update:tradeTab', tab)"
       >
-        {{ t }}
+        {{ tab }}
       </div>
     </div>
-    <div v-for="item in filteredTrades" :key="item.name" class="trade-item">
-      <div class="trade-img">{{ item.icon }}</div>
-      <div class="trade-info">
-        <div class="trade-name">{{ item.name }}</div>
-        <div class="trade-type">{{ item.type }}</div>
+
+    <div class="trade-list">
+      <div v-for="item in visibleTrades" :key="item.name" class="trade-item">
+        <div class="trade-top">
+          <div class="trade-left">
+            <div class="trade-img">{{ item.icon }}</div>
+            <div class="trade-info">
+              <div class="trade-name">{{ item.name }}</div>
+              <div class="trade-type">{{ item.type }}</div>
+            </div>
+          </div>
+          <div class="trade-price">{{ item.price }}</div>
+        </div>
+
+        <div class="trade-actions">
+          <button class="trade-btn trade-btn-buy" type="button">Buy</button>
+          <button class="trade-btn trade-btn-chat" type="button">Open trade chat</button>
+        </div>
       </div>
-      <div class="trade-price">{{ item.price }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed, ref } from 'vue';
+
+const props = defineProps<{
   active: boolean;
   tradeTabs: string[];
   tradeTab: string;
@@ -44,12 +64,30 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'update:tradeTab', value: string): void;
 }>();
+
+const searchQuery = ref('');
+
+const visibleTrades = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase();
+  if (!query) {
+    return props.filteredTrades;
+  }
+
+  return props.filteredTrades.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(query)
+      || item.type.toLowerCase().includes(query)
+      || item.price.toLowerCase().includes(query)
+    );
+  });
+});
 </script>
 
-<style>
+<style scoped>
 .trades-page {
   overflow-y: auto;
-  padding-bottom: 60px;
+  padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  background: #050101;
 }
 
 .trades-page::-webkit-scrollbar {
@@ -57,55 +95,68 @@ const emit = defineEmits<{
 }
 
 .search-bar {
-  margin: 10px 16px;
-  height: 42px;
-  border: 1px solid #1a0808;
-  border-radius: 10px;
-  background: #0e0a0a;
+  margin: 10px 18px;
+  height: 48px;
+  border: 1px solid #661010;
+  border-radius: 13px;
+  background: #070202;
   display: flex;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 16px;
   gap: 10px;
-  color: #555;
-  font-size: 14px;
+  color: #b62222;
+}
+
+.search-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .search-bar input {
   background: transparent;
   border: none;
   outline: none;
-  color: #aaa;
+  color: #d53a3a;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   flex: 1;
 }
 
+.search-bar input::placeholder {
+  color: #9d1d1d;
+}
+
 .wallet-bar {
-  padding: 8px 9px 14px;
-  border-bottom: 1px solid #1a0808;
+  padding: 10px 14px 12px;
+  border-bottom: 1px solid #2f0909;
+  background: linear-gradient(90deg, rgba(85, 4, 4, 0.82), rgba(28, 0, 56, 0.78));
 }
 
 .wallet-label {
-  font-size: 13px;
-  color: #555;
+  font-size: 12px;
+  color: #b26161;
 }
 
 .wallet-amount {
-  font-family: var(--font-caps);
-  font-size: 26px;
+  font-family: var(--font-title);
+  font-size: 52px;
+  line-height: 0.95;
   color: var(--text-red);
 }
 
 .tab-row {
   display: flex;
-  border-bottom: 1px solid #1a0808;
-  padding: 0 35px;
+  justify-content: space-between;
+  border-bottom: 1px solid #2f0909;
+  padding: 0 18px;
+  background: #050101;
 }
 
 .tab-item {
-  font-size: 16px;
-  color: #555;
-  padding: 8px 18px 8px 0;
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: #b14646;
+  padding: 8px 4px 10px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
@@ -113,55 +164,105 @@ const emit = defineEmits<{
 }
 
 .tab-item.active {
-  color: white;
+  color: #ff5a5a;
   border-bottom-color: var(--red);
+}
+
+.trade-list {
+  padding: 12px 14px 0;
 }
 
 .trade-item {
   display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  border-bottom: 1px solid #0f0808;
+  flex-direction: column;
   gap: 12px;
-  cursor: pointer;
-  transition: background 0.15s;
+  margin: 0 6px 12px;
+  padding: 10px 12px 12px;
+  border: 1px solid #631010;
+  border-radius: 14px;
+  background: #060202;
 }
 
-.trade-item:hover {
-  background: rgba(81, 17, 30, 0.15);
+.trade-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.trade-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .trade-img {
   width: 44px;
   height: 44px;
-  border: 1px solid #830202;
+  border: 1px solid #6d1616;
   border-radius: 6px;
-  background: radial-gradient(circle, rgba(94, 7, 7, 0.2), rgba(189, 15, 15, 0.3));
+  background: radial-gradient(circle, rgba(94, 7, 7, 0.25), rgba(189, 15, 15, 0.18));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
 .trade-info {
   flex: 1;
+  min-width: 0;
 }
 
 .trade-name {
+  font-family: var(--font-title);
   font-size: 14px;
-  color: white;
+  color: #f0b6b6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .trade-type {
-  font-size: 12px;
-  color: #666;
-  margin-top: 2px;
+  font-size: 11px;
+  color: #8f3434;
+  margin-top: 1px;
 }
 
 .trade-price {
-  font-family: var(--font-caps);
-  font-size: 18px;
-  color: var(--text-red);
+  font-family: var(--font-title);
+  font-size: 34px;
+  line-height: 1;
+  color: #f58b8b;
+}
+
+.trade-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-left: 54px;
+}
+
+.trade-btn {
+  height: 32px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.trade-btn-buy {
+  width: 135px;
+  border: none;
+  color: #fff;
+  background: linear-gradient(90deg, #d10000, #9d0000);
+}
+
+.trade-btn-chat {
+  width: 135px;
+  border: 1px solid #b51414;
+  color: #f2d5d5;
+  background: transparent;
 }
 </style>
