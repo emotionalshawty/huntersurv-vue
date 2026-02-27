@@ -129,6 +129,10 @@ export const useHunterData = () => {
     return allTrades.filter((t) => t.cat === map[state.tradeTab.value]);
   });
 
+  const markAllNotificationsRead = () => {
+    notifications.forEach(n => n.unread = false);
+  };
+
   return {
     challenges,
     inventory,
@@ -143,5 +147,6 @@ export const useHunterData = () => {
     music: state.music,
     pushNotifs: state.pushNotifs,
     filteredTrades,
+    markAllNotificationsRead,
   };
 };

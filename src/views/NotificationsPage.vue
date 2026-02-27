@@ -8,6 +8,7 @@
               :active="true"
               :notifications="notifications"
               @back="goBack"
+              @mark-all-read="markAllNotificationsRead"
             />
           </ion-col>
         </ion-row>
@@ -23,7 +24,7 @@ import NotificationsScreen from '../components/hunter-survivors/NotificationsScr
 import { useHunterData } from '../composables/useHunterData';
 
 const router = useRouter();
-const { notifications } = useHunterData();
+const { notifications, markAllNotificationsRead } = useHunterData();
 
 const goBack = () => {
   router.push('/tabs/main');

@@ -1,11 +1,12 @@
 <template>
   <div :class="['screen', 'notif-page', { active: active }]">
     <div class="page-header notif-header">
+      <button class="notif-back-btn" type="button" @click="$emit('back')" title="Back to Main">✕</button>
       <div>
         <div class="page-header-title">Notifications</div>
         <div class="page-header-sub">Whispers are arriving to you</div>
       </div>
-      <button class="notif-header-action" @click="$emit('back')">Mark All Read</button>
+      <button class="notif-header-action" @click="$emit('markAllRead')">Mark All Read</button>
     </div>
     <div class="notif-item" v-for="n in notifications" :key="n.title">
       <div class="notif-item-title">{{ n.title }}</div>
@@ -24,6 +25,7 @@ defineProps<{
 
 defineEmits<{
   (e: 'back'): void;
+  (e: 'markAllRead'): void;
 }>();
 </script>
 
@@ -41,6 +43,30 @@ defineEmits<{
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 12px;
+}
+
+.notif-back-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #d24b4b;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.notif-back-btn:hover {
+  color: #ff6a6a;
+  transform: scale(1.1);
 }
 
 .notif-header-action {

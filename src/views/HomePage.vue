@@ -57,6 +57,7 @@
             :active="screen === 'notifications'"
             :notifications="notifications"
             @back="goTo('main')"
+            @mark-all-read="markAllNotificationsRead"
           />
           <SettingsScreen
             :active="screen === 'settings'"
@@ -178,6 +179,10 @@ let tracking = false;
 
 const goTo = (next: string) => {
   screen.value = next;
+};
+
+const markAllNotificationsRead = () => {
+  notifications.forEach(n => n.unread = false);
 };
 
 const onPointerDown = (event: PointerEvent) => {
