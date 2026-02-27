@@ -1,40 +1,57 @@
 <template>
   <div :class="['screen', 'settings-page', { active: active }]">
     <div class="page-header settings-header">
-      <button class="settings-back" @click="$emit('back')">←</button>
+      <ion-button fill="clear" class="settings-back" @click="emit('back')">
+        <ion-icon :icon="arrowBackOutline" />
+      </ion-button>
       <div>
         <div class="page-header-title">Settings</div>
         <div class="page-header-sub">Configure Your Application</div>
       </div>
     </div>
+    <div class="settings-divider"></div>
+
     <div class="settings-section-label">Audio</div>
-    <div class="settings-group">
-      <div class="settings-row">
-        <span>Sound Effects</span>
-        <div :class="['toggle', sfx ? 'on' : 'off']" @click="emit('update:sfx', !sfx)">
-          <div class="toggle-knob"></div>
-        </div>
-      </div>
-      <div class="settings-row">
-        <span>Music</span>
-        <div :class="['toggle', music ? 'on' : 'off']" @click="emit('update:music', !music)">
-          <div class="toggle-knob"></div>
-        </div>
-      </div>
-    </div>
+    <ion-list class="settings-group settings-group-audio" lines="none">
+      <ion-item class="settings-row" lines="full">
+        <ion-label>Sound Effects</ion-label>
+        <ion-toggle
+          slot="end"
+          :checked="sfx"
+          @ionChange="emit('update:sfx', !!$event.detail.checked)"
+          class="toggle toggle-audio"
+        />
+      </ion-item>
+      <ion-item class="settings-row" lines="none">
+        <ion-label>Music</ion-label>
+        <ion-toggle
+          slot="end"
+          :checked="music"
+          @ionChange="emit('update:music', !!$event.detail.checked)"
+          class="toggle toggle-audio"
+        />
+      </ion-item>
+    </ion-list>
+
     <div class="settings-section-label">Notifications</div>
-    <div class="settings-group">
-      <div class="settings-row">
-        <span>Push Notifications</span>
-        <div :class="['toggle', pushNotifs ? 'red-on' : 'off']" @click="emit('update:pushNotifs', !pushNotifs)">
-          <div class="toggle-knob"></div>
-        </div>
-      </div>
-    </div>
+    <ion-list class="settings-group settings-group-notifs" lines="none">
+      <ion-item class="settings-row" lines="none">
+        <ion-label>Push Notifications</ion-label>
+        <ion-toggle
+          slot="end"
+          :checked="pushNotifs"
+          @ionChange="emit('update:pushNotifs', !!$event.detail.checked)"
+          class="toggle toggle-red"
+        />
+      </ion-item>
+    </ion-list>
   </div>
 </template>
 
 <script setup lang="ts">
+import { IonButton, IonIcon, IonItem, IonLabel, IonList, IonToggle } from '@ionic/vue';
+import { arrowBackOutline } from 'ionicons/icons';
+
 defineProps<{
   active: boolean;
   sfx: boolean;
@@ -50,10 +67,12 @@ const emit = defineEmits<{
 }>();
 </script>
 
-<style>
+<style scoped>
 .settings-page {
+  position: relative;
   overflow-y: auto;
-  padding-bottom: 60px;
+  padding-bottom: 24px;
+  background: radial-gradient(circle at 50% 130%, rgba(120, 0, 0, 0.34) 0%, rgba(5, 1, 1, 0.35) 42%), #050101;
 }
 
 .settings-page::-webkit-scrollbar {
@@ -61,83 +80,115 @@ const emit = defineEmits<{
 }
 
 .settings-section-label {
-  font-size: 16px;
-  color: white;
-  padding: 14px 20px 8px;
+  font-family: var(--font-title, serif);
+  font-size: 20px;
+  line-height: 1;
+  color: #df3b3b;
+  padding: 20px 26px 10px;
 }
 
 .settings-group {
-  margin: 0 20px 16px;
-  border: 1px solid #270708;
-  border-radius: 10px;
+  margin: 0 26px 14px;
+  border-radius: 12px;
   overflow: hidden;
+  backdrop-filter: blur(1px);
+  padding: 0;
+  background: transparent;
+}
+
+.settings-group-audio {
+  border: 1px solid #3b0f56;
+  background: linear-gradient(130deg, rgba(22, 4, 40, 0.9), rgba(9, 4, 24, 0.84));
+}
+
+.settings-group-notifs {
+  border: 1px solid #651010;
+  background: linear-gradient(120deg, rgba(56, 8, 8, 0.88), rgba(27, 5, 5, 0.82));
 }
 
 .settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid #0f0808;
-  font-size: 14px;
-  color: #ccc;
+  --padding-start: 18px;
+  --padding-end: 18px;
+  --inner-padding-end: 0;
+  --min-height: 62px;
+  --background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 16px;
+  color: #c495ea;
+  font-family: var(--font-body, serif);
 }
 
-.settings-row:last-child {
+.settings-row:last-child,
+.settings-group .settings-row:last-child {
   border-bottom: none;
 }
 
+.settings-row ion-label {
+  margin: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.settings-group-notifs .settings-row {
+  color: #e56161;
+}
+
 .toggle {
-  width: 50px;
-  height: 26px;
-  border-radius: 13px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.25s;
+  --track-background: #3c134f;
+  --track-background-checked: linear-gradient(90deg, #8e2de2, #6c1db8);
+  --handle-background: #ffffff;
+  --handle-background-checked: #ffffff;
+  --handle-border-radius: 50%;
+  width: 68px;
+  height: 34px;
+  transform: scale(1);
 }
 
-.toggle.on {
-  background: var(--purple);
-}
-
-.toggle.off {
-  background: #1a0808;
-}
-
-.toggle.red-on {
-  background: var(--red-dark);
-}
-
-.toggle-knob {
-  position: absolute;
-  top: 3px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: white;
-  transition: left 0.25s;
-}
-
-.toggle.on .toggle-knob,
-.toggle.red-on .toggle-knob {
-  left: 27px;
-}
-
-.toggle.off .toggle-knob {
-  left: 3px;
+.toggle.toggle-red {
+  --track-background: #3f0a0a;
+  --track-background-checked: #e50000;
 }
 
 .settings-header {
   display: flex;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
+  padding: 32px 20px 10px;
+  border: none;
+}
+
+.settings-header .page-header-title {
+  font-family: var(--font-title, serif);
+  font-size: 40px;
+  line-height: 1;
+  color: #ff2a2a;
+}
+
+.settings-header .page-header-sub {
+  font-family: var(--font-body, serif);
+  font-size: 14px;
+  color: #b84a4a;
+  margin-top: 2px;
+}
+
+.settings-divider {
+  height: 1px;
+  margin: 0 0 8px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0.8;
 }
 
 .settings-back {
-  background: none;
-  border: none;
-  color: #ccc;
-  font-size: 22px;
-  cursor: pointer;
+  --color: #ff2a2a;
+  --padding-start: 0;
+  --padding-end: 0;
+  --ripple-color: rgba(255, 42, 42, 0.25);
+  margin: 0;
+  font-size: 30px;
+}
+
+.settings-back ion-icon {
+  font-size: 30px;
 }
 </style>

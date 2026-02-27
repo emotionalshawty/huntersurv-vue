@@ -1,9 +1,9 @@
 <template>
-  <ion-page class="hs-page">
-    <ion-content :fullscreen="true" class="hs-content">
-      <ion-grid class="hs-grid">
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-md="10" size-lg="8" size-xl="6" class="hs-col">
+  <ion-page class="hs-page hs-settings-page">
+    <ion-content :fullscreen="true" class="hs-content hs-settings-content">
+      <ion-grid class="hs-grid hs-settings-grid">
+        <ion-row class="ion-justify-content-center hs-settings-row">
+          <ion-col size="12" size-md="10" size-lg="8" size-xl="6" class="hs-col hs-settings-col">
             <SettingsScreen
               :active="true"
               v-model:sfx="sfx"
@@ -31,3 +31,26 @@ const goBack = () => {
   router.push('/tabs/main');
 };
 </script>
+
+<style>
+.hs-settings-page {
+  background: #050101 !important;
+}
+
+.hs-settings-content {
+  --background: #050101 !important;
+  background: #050101 !important;
+  --padding-bottom: 0px;
+}
+
+.hs-settings-grid,
+.hs-settings-row,
+.hs-settings-col {
+  height: 100%;
+  min-height: 0;
+}
+
+.hs-settings-row {
+  align-items: stretch;
+}
+</style>
