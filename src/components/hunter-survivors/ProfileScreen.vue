@@ -1,10 +1,10 @@
 <template>
   <div :class="['screen', 'profile-page', { active: active }]">
     <div class="profile-hero">
-      <div class="profile-avatar">🎭</div>
-      <div class="profile-name">Lord Ganja</div>
-      <div class="profile-role">Ancient Hunter · Level 420</div>
-      <button class="btn-edit-profile">Edit Profile</button>
+      <div class="profile-avatar">{{ avatarEmoji }}</div>
+      <div class="profile-name">{{ profileName }}</div>
+      <div class="profile-role">{{ profileTitle }} · Level 420</div>
+      <button class="btn-edit-profile" @click="openEditModal">Edit Profile</button>
     </div>
     <div class="profile-stats">
       <div class="profile-stat">
@@ -34,14 +34,81 @@
         <div v-for="item in inventory" :key="item" class="inv-slot">{{ item }}</div>
       </div>
     </div>
+
+    <div v-if="showEditModal" class="edit-modal-overlay" @click.self="closeEditModal">
+      <div class="edit-modal">
+        <div class="edit-modal-header">
+          <div class="edit-modal-title">Edit Profile</div>
+          <button class="edit-close" @click="closeEditModal">✕</button>
+        </div>
+
+        <div class="edit-avatar-wrap">
+          <div class="edit-avatar">{{ draftAvatarEmoji }}</div>
+          <button class="edit-avatar-btn" type="button">🖼 Change Avatar</button>
+        </div>
+
+        <div class="edit-field-label">👤 Username</div>
+        <input v-model="draftName" class="edit-input" type="text" />
+
+        <div class="edit-field-label">Select Title</div>
+        <select v-model="draftTitle" class="edit-input edit-select">
+          <option>Ancient Hunter</option>
+          <option>Blood Reaper</option>
+          <option>Night Stalker</option>
+          <option>Relic Seeker</option>
+        </select>
+
+        <div class="edit-field-label">✉ Email</div>
+        <input v-model="draftEmail" class="edit-input" type="email" />
+
+        <div class="edit-actions">
+          <button class="edit-btn edit-btn-cancel" @click="closeEditModal">CANCEL</button>
+          <button class="edit-btn edit-btn-save" @click="saveProfile">SAVE CHANGES</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 defineProps<{
   active: boolean;
   inventory: string[];
 }>();
+
+const showEditModal = ref(false);
+
+const profileName = ref('Lord Ganja');
+const profileTitle = ref('Ancient Hunter');
+const profileEmail = ref('epsteindidntkillhimself@pro.gamer');
+const avatarEmoji = ref('🎭');
+
+const draftName = ref(profileName.value);
+const draftTitle = ref(profileTitle.value);
+const draftEmail = ref(profileEmail.value);
+const draftAvatarEmoji = ref(avatarEmoji.value);
+
+const openEditModal = () => {
+  draftName.value = profileName.value;
+  draftTitle.value = profileTitle.value;
+  draftEmail.value = profileEmail.value;
+  draftAvatarEmoji.value = avatarEmoji.value;
+  showEditModal.value = true;
+};
+
+const closeEditModal = () => {
+  showEditModal.value = false;
+};
+
+const saveProfile = () => {
+  profileName.value = draftName.value.trim() || profileName.value;
+  profileTitle.value = draftTitle.value;
+  profileEmail.value = draftEmail.value.trim() || profileEmail.value;
+  avatarEmoji.value = draftAvatarEmoji.value;
+  showEditModal.value = false;
+};
 </script>
 
 <style>
@@ -89,7 +156,7 @@ defineProps<{
 
 .btn-edit-profile {
   margin-top: 12px;
-  border: 1px solid var(--red-border);
+  border: 1px solid #a82020;
   border-radius: 20px;
   background: transparent;
   color: white;
@@ -105,37 +172,70 @@ defineProps<{
 }
 
 .profile-stats {
-  display: flex;
-  border-top: 1px solid #1a0808;
-  border-bottom: 1px solid #1a0808;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 2px 16px 6px;
 }
 
 .profile-stat {
-  flex: 1;
+  background: #070404;
+  border: 1px solid #5a1111;
+  border-radius: 10px;
   text-align: center;
-  padding: 14px 0;
-  border-right: 1px solid #1a0808;
+  padding: 12px 0 10px;
 }
 
-.profile-stat:last-child {
-  border-right: none;
+.profile-stat:nth-child(1) {
+  border-color: #8f7e2a;
+}
+
+.profile-stat:nth-child(2) {
+  border-color: #7d1414;
+}
+
+.profile-stat:nth-child(3) {
+  border-color: #142f7d;
 }
 
 .profile-stat-val {
-  font-family: var(--font-caps);
-  font-size: 26px;
-  color: var(--text-red);
+  font-family: var(--font-title);
+  font-size: 42px;
+  line-height: 1;
+}
+
+.profile-stat:nth-child(1) .profile-stat-val {
+  color: #d8b948;
+}
+
+.profile-stat:nth-child(2) .profile-stat-val {
+  color: #ff4a4a;
+}
+
+.profile-stat:nth-child(3) .profile-stat-val {
+  color: #667dff;
 }
 
 .profile-stat-label {
-  font-size: 11px;
-  color: #666;
-  margin-top: 3px;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.profile-stat:nth-child(1) .profile-stat-label {
+  color: #bba24a;
+}
+
+.profile-stat:nth-child(2) .profile-stat-label {
+  color: #d14f4f;
+}
+
+.profile-stat:nth-child(3) .profile-stat-label {
+  color: #5e73dd;
 }
 
 .achievements-card {
   margin: 16px 20px;
-  border: 1px solid #270708;
+  border: 1px solid #6a1515;
   border-radius: 10px;
   padding: 14px 16px;
 }
@@ -148,7 +248,7 @@ defineProps<{
 
 .achievement-badge {
   background: #0e0a0a;
-  border: 1px solid #1a0808;
+  border: 1px solid #3d1212;
   border-radius: 6px;
   padding: 8px 14px;
   margin-bottom: 6px;
@@ -162,7 +262,7 @@ defineProps<{
 .section-card {
   margin: 0 20px 16px;
   border-radius: 12px;
-  border: 1px solid #270708;
+  border: 1px solid #6a1515;
   padding: 14px 16px;
 }
 
@@ -187,7 +287,7 @@ defineProps<{
 .inv-slot {
   width: 60px;
   height: 60px;
-  border: 1px solid #830202;
+  border: 1px solid #b31a1a;
   border-radius: 4px;
   background: radial-gradient(circle, rgba(94, 7, 7, 0.185) 0%, rgba(189, 15, 15, 0.37) 100%);
   display: flex;
@@ -201,5 +301,129 @@ defineProps<{
 .inv-slot:hover {
   border-color: var(--red);
   background: rgba(189, 15, 15, 0.4);
+}
+
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.edit-modal {
+  width: min(100%, 430px);
+  background: linear-gradient(180deg, rgba(90, 8, 8, 0.94) 0%, rgba(10, 3, 3, 0.98) 62%);
+  border: 1px solid #8a1414;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.6);
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid #6f1414;
+}
+
+.edit-modal-title {
+  font-family: var(--font-title);
+  font-size: 40px;
+  color: #f1d9d9;
+}
+
+.edit-close {
+  border: none;
+  background: transparent;
+  color: #ff1f1f;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.edit-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px 8px;
+}
+
+.edit-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1px solid #741212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  background: radial-gradient(circle at 50% 35%, rgba(140, 20, 20, 0.8), rgba(40, 5, 5, 0.95));
+}
+
+.edit-avatar-btn {
+  background: transparent;
+  border: none;
+  color: #ff6969;
+  font-size: 16px;
+  font-family: var(--font-title);
+  cursor: pointer;
+}
+
+.edit-field-label {
+  margin: 10px 20px 6px;
+  color: #ff6969;
+  font-size: 18px;
+  font-family: var(--font-title);
+}
+
+.edit-input {
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #7a1111;
+  background: #070202;
+  color: #f3e7e7;
+  font-size: 20px;
+  font-family: var(--font-title);
+  padding: 0 12px;
+}
+
+.edit-select {
+  appearance: none;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px 20px;
+}
+
+.edit-btn {
+  height: 44px;
+  border-radius: 6px;
+  font-family: var(--font-title);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit-btn-cancel {
+  width: 44%;
+  border: 1px solid #a82727;
+  background: transparent;
+  color: #ffd3d3;
+}
+
+.edit-btn-save {
+  width: 56%;
+  border: none;
+  background: linear-gradient(90deg, #d10000, #a10000);
+  color: #fff;
 }
 </style>
