@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chat-rooms-root">
     <div class="page-header">
       <div class="page-header-title">Hunter's whispers</div>
       <div class="page-header-sub">{{ chatTab === 'Trades' ? 'Create your own listing' : 'Interact with other damned' }}</div>
@@ -45,7 +45,7 @@
 
       <div class="action-buttons">
         <button class="action-btn">ADD FRIENDS</button>
-        <button class="action-btn">CREATE CHAT</button>
+        <button class="action-btn" @click="openCreateChatModal">CREATE CHAT</button>
       </div>
 
       <div class="map-section">
@@ -65,12 +65,20 @@
     </div>
 
     <ChatTradesView v-else />
+
+    <CreateChatModal
+      v-if="showCreateChatModal"
+      :get-avatar-url="props.getAvatarUrl"
+      @close="closeCreateChatModal"
+      @select-hunter="selectSuggestedHunter"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import ChatTradesView from './ChatTradesView.vue';
+import CreateChatModal from './CreateChatModal.vue';
 
 type ChatEntry = {
   name: string;
@@ -81,7 +89,7 @@ type ChatEntry = {
   icon: string;
 };
 
-defineProps<{
+const props = defineProps<{
   chatTab: string;
   chats: ChatEntry[];
   getAvatarUrl: (name: string) => string;
@@ -93,13 +101,39 @@ const emit = defineEmits<{
 }>();
 
 const mapError = ref(true);
+const showCreateChatModal = ref(false);
 
 const handleImageError = () => {
   mapError.value = true;
 };
+
+const openCreateChatModal = () => {
+  showCreateChatModal.value = true;
+};
+
+const closeCreateChatModal = () => {
+  showCreateChatModal.value = false;
+};
+
+const selectSuggestedHunter = (name: string) => {
+  emit('select-chat', {
+    name,
+    preview: 'Newly connected through Hunter Brothers',
+    time: 'now',
+    badge: 0,
+    unread: false,
+    icon: '💬',
+  });
+  showCreateChatModal.value = false;
+};
 </script>
 
 <style scoped>
+.chat-rooms-root {
+  position: relative;
+  min-height: 100%;
+}
+
 .page-header {
   padding: 39px 24px 0;
   border-bottom: 1px solid #1a0808;
