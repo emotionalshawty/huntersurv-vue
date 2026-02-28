@@ -2,7 +2,7 @@
   <div>
     <div class="page-header">
       <div class="page-header-title">Hunter's whispers</div>
-      <div class="page-header-sub">Interact with other damned</div>
+      <div class="page-header-sub">{{ chatTab === 'Trades' ? 'Create your own listing' : 'Interact with other damned' }}</div>
     </div>
 
     <div class="chat-tabs">
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="chat-list-container">
+    <div v-if="chatTab === 'Chats'" class="chat-list-container">
       <div class="chat-list">
         <div
           v-for="(chat, index) in chats"
@@ -63,11 +63,14 @@
         </div>
       </div>
     </div>
+
+    <ChatTradesView v-else />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import ChatTradesView from './ChatTradesView.vue';
 
 type ChatEntry = {
   name: string;
@@ -78,7 +81,7 @@ type ChatEntry = {
   icon: string;
 };
 
-const props = defineProps<{
+defineProps<{
   chatTab: string;
   chats: ChatEntry[];
   getAvatarUrl: (name: string) => string;
@@ -117,16 +120,18 @@ const handleImageError = () => {
 
 .chat-tabs {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid #1a0808;
-  padding: 0 24px;
+  padding: 0 40px;
   flex-shrink: 0;
 }
 
 .chat-tab {
-  font-size: 20px;
+  font-size: 26px;
   color: #8a2b2b;
-  padding: 12px 0;
-  margin-right: 40px;
+  padding: 8px 0 7px;
+  margin-right: 0;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
