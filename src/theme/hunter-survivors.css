@@ -1,5 +1,5 @@
 :root {
-  --bg: #0a0907;
+  --bg: #050101;
   --red: #c40d0d;
   --red-deep: #900;
   --red-dark: #510808;
@@ -22,7 +22,7 @@ html,
 body,
 #app {
   height: 100%;
-  background: #111;
+  background: var(--bg);
   font-family: var(--font-body);
 }
 
@@ -35,11 +35,11 @@ body,
 }
 
 .hs-page {
-  background: #111;
+  background: var(--bg);
 }
 
 .hs-content {
-  --background: #111;
+  --background: var(--bg);
 }
 
 .hs-grid {
@@ -58,6 +58,7 @@ body,
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  background: var(--bg);
   transition: opacity 0.25s;
 }
 

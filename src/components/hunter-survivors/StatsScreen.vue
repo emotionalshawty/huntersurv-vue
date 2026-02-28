@@ -101,7 +101,7 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 .stats-page {
   overflow-y: auto;
   padding-bottom: 60px;
-  background: #050505;
+  background: var(--bg);
   --stats-text-dark: #b41f24;
 }
 

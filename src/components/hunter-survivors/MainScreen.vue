@@ -70,7 +70,7 @@ defineEmits<{
 
 <style>
 .main-screen {
-  background: #050505;
+  background: var(--bg);
   flex-direction: column;
   overflow-y: auto;
   padding-bottom: 68px;
