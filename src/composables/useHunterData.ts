@@ -53,8 +53,8 @@ const attributes: Attribute[] = [
 const combatStats: CombatStat[] = [
   { val: '682,549', label: 'Kills' },
   { val: '381', label: 'Deaths' },
-  { val: '1791.4', label: 'K/D Ratio' },
-  { val: '5.6M', label: 'Dmg Dealt' },
+  { val: '1791,4', label: 'K/D Ratio' },
+  { val: '5,612,400', label: 'Damage dealt' },
   { val: '68.3%', label: 'Survival Rate' },
   { val: '817', label: 'Bosses Defeated' },
 ];

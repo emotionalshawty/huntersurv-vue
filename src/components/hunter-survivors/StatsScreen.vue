@@ -39,7 +39,7 @@
           <button class="plus-btn" @click="increaseStat(stat.name)">+</button>
         </div>
         <div class="attr-bar-bg">
-          <div class="attr-bar-fill" :style="{ width: statPercent(stat) + '%', background: stat.color }"></div>
+          <div class="attr-bar-fill" :style="{ width: statPercent(stat) + '%', '--stat-color': stat.color }"></div>
         </div>
       </div>
     </div>
@@ -102,6 +102,7 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
   overflow-y: auto;
   padding-bottom: 60px;
   background: #050505;
+  --stats-text-dark: #b41f24;
 }
 
 .stats-page::-webkit-scrollbar {
@@ -114,11 +115,16 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 }
 
 .stats-page .page-header-title {
-  color: #e9332c;
+  color: var(--stats-text-dark);
+  font-family: var(--font-title);
+  font-size: 44px;
+  line-height: 1;
 }
 
 .stats-page .page-header-sub {
-  color: #d45e4f;
+  color: #b95444;
+  font-size: 14px;
+  line-height: 1.2;
 }
 
 .hero-card {
@@ -127,6 +133,7 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
   border: 1px solid #6d0d5f;
   background: linear-gradient(110deg, #390008, #22002f);
   padding: 11px 12px 10px;
+  box-shadow: 0 0 0 1px rgba(80, 8, 26, 0.25) inset;
 }
 
 .hero-top {
@@ -157,7 +164,8 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 
 .hero-role {
   margin-top: 2px;
-  color: var(--text-red);
+  color: var(--stats-text-dark);
+  font-family: var(--font-title);
   font-size: 15px;
   line-height: 1.1;
 }
@@ -172,7 +180,8 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 .hero-level-row {
   display: flex;
   justify-content: space-between;
-  color: var(--text-red);
+  color: var(--stats-text-dark);
+  font-family: var(--font-title);
   font-size: 12px;
   margin-bottom: 7px;
   padding: 0 2px;
@@ -187,6 +196,8 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 .attr-bar-fill {
   height: 7px;
   border-radius: 999px;
+  background: linear-gradient(to right, var(--stat-color, var(--red)) 0%, #1f1f1f 100%);
+  background: linear-gradient(to right, var(--stat-color, var(--red)) 0%, color-mix(in srgb, var(--stat-color, var(--red)) 45%, black) 100%);
   transition: width 0.25s ease;
 }
 
@@ -195,15 +206,17 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 }
 
 .hero-xp-fill {
-  background: var(--red);
+  background: linear-gradient(to right, var(--red) 0%, color-mix(in srgb, var(--red) 45%, black) 100%);
 }
 
 .section-title {
   padding: 0 20px;
   margin-top: 8px;
   margin-bottom: 7px;
-  font-size: 33px;
-  color: var(--text-red);
+  font-family: var(--font-title);
+  font-size: 35px;
+  line-height: 1;
+  color: var(--stats-text-dark);
 }
 
 .core-attrs {
@@ -211,10 +224,11 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 }
 
 .core-item {
-  border: 1px solid #4f0707;
+  border: 1px solid #4e0709;
   border-radius: 12px;
   margin: 0 8px 11px;
   padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(17, 4, 4, 0.5), rgba(8, 2, 2, 0.45));
 }
 
 .core-row {
@@ -245,14 +259,15 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 }
 
 .core-name {
-  color: var(--text-red);
+  color: var(--stats-text-dark);
+  font-family: var(--font-title);
   font-size: 15px;
   line-height: 1.1;
 }
 
 .core-value {
-  color: var(--text-red);
-  font-size: 13px;
+  color: var(--stats-text-dark);
+  font-size: 14px;
   line-height: 1.1;
   margin-top: 4px;
 }
@@ -260,45 +275,55 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 .plus-btn {
   width: 31px;
   height: 30px;
-  border: none;
+  border: 1px solid rgba(199, 42, 42, 0.3);
   border-radius: 5px;
   background: linear-gradient(180deg, #861b1b, #460909);
   box-shadow: 0 0 8px rgba(255, 77, 77, 0.25);
   color: white;
+  font-family: var(--font-caps);
   font-size: 29px;
   line-height: 1;
   cursor: pointer;
 }
 
+.plus-btn:active {
+  transform: translateY(1px);
+}
+
 .combat-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin: 0 20px 16px;
+  gap: 12px;
+  margin: 0 20px 18px;
 }
 
 .combat-stat {
-  border: 1px solid #270708;
+  border: 1px solid #3f090e;
   border-radius: 8px;
-  padding: 12px 10px;
+  padding: 14px 10px 12px;
   text-align: center;
 }
 
 .combat-val {
-  font-family: var(--font-caps);
-  font-size: 22px;
-  color: var(--text-red);
+  font-family: var(--font-title);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--stats-text-dark);
 }
 
 .combat-label {
+  font-family: var(--font-title);
   font-size: 11px;
-  color: #777;
-  margin-top: 4px;
+  color: var(--stats-text-dark);
+  margin-top: 2px;
+  line-height: 1.1;
 }
 
 .combat-label-row {
   padding: 0 20px 8px;
-  font-size: 29px;
-  color: var(--text-red);
+  font-family: var(--font-title);
+  font-size: 33px;
+  line-height: 1;
+  color: var(--stats-text-dark);
 }
 </style>
