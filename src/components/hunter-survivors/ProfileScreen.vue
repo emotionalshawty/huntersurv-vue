@@ -1,7 +1,9 @@
 <template>
   <div :class="['screen', 'profile-page', { active: active }]">
     <div class="profile-hero">
-      <div class="profile-avatar">{{ avatarEmoji }}</div>
+      <div class="profile-avatar">
+        <img src="/ganjagod.png" alt="Ganjagod avatar" class="profile-avatar-img" />
+      </div>
       <div class="profile-name">{{ profileName }}</div>
       <div class="profile-role">{{ profileTitle }} · Level 420</div>
       <button class="btn-edit-profile" @click="openEditModal">Edit Profile</button>
@@ -59,7 +61,9 @@
         </div>
 
         <div class="edit-avatar-wrap">
-          <div class="edit-avatar">{{ draftAvatarEmoji }}</div>
+          <div class="edit-avatar">
+            <img src="/ganjagod.png" alt="Ganjagod avatar" class="edit-avatar-img" />
+          </div>
           <button class="edit-avatar-btn" type="button">🖼 Change Avatar</button>
         </div>
 
@@ -101,18 +105,15 @@ const showFullInventoryModal = ref(false);
 const profileName = ref('Lord Ganja');
 const profileTitle = ref('Ancient Hunter');
 const profileEmail = ref('epsteindidntkillhimself@pro.gamer');
-const avatarEmoji = ref('🎭');
 
 const draftName = ref(profileName.value);
 const draftTitle = ref(profileTitle.value);
 const draftEmail = ref(profileEmail.value);
-const draftAvatarEmoji = ref(avatarEmoji.value);
 
 const openEditModal = () => {
   draftName.value = profileName.value;
   draftTitle.value = profileTitle.value;
   draftEmail.value = profileEmail.value;
-  draftAvatarEmoji.value = avatarEmoji.value;
   showEditModal.value = true;
 };
 
@@ -124,7 +125,6 @@ const saveProfile = () => {
   profileName.value = draftName.value.trim() || profileName.value;
   profileTitle.value = draftTitle.value;
   profileEmail.value = draftEmail.value.trim() || profileEmail.value;
-  avatarEmoji.value = draftAvatarEmoji.value;
   showEditModal.value = false;
 };
 
@@ -171,10 +171,17 @@ const closeFullInventoryModal = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
   border: 3px solid var(--red);
   margin-bottom: 12px;
   box-shadow: 0 0 30px rgba(196, 13, 13, 0.4);
+  overflow: hidden;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .profile-name {
@@ -474,8 +481,15 @@ const closeFullInventoryModal = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 50px;
   background: radial-gradient(circle at 50% 35%, rgba(140, 20, 20, 0.8), rgba(40, 5, 5, 0.95));
+  overflow: hidden;
+}
+
+.edit-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .edit-avatar-btn {

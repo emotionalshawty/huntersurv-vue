@@ -1,25 +1,46 @@
 <template>
   <div :class="['screen', 'signup-screen', { active: active }]">
-    <button class="back-btn" @click="$emit('back')">← Back</button>
-    <h1 class="signup-title">Hunter Survivors</h1>
+    <h1 class="signup-title">HUNTER<br />SURVIVORS</h1>
+
     <div class="signup-fields">
       <div class="input-field">
-        <span class="input-icon">👤</span>
+        <span class="input-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </span>
         <input type="text" placeholder="USERNAME" />
       </div>
       <div class="input-field">
-        <span class="input-icon">✉</span>
+        <span class="input-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="14"></rect>
+            <path d="M3 7l9 6 9-6"></path>
+          </svg>
+        </span>
         <input type="email" placeholder="EMAIL ADDRESS" />
       </div>
       <div class="input-field">
-        <span class="input-icon">🔒</span>
+        <span class="input-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+            <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
+          </svg>
+        </span>
         <input type="password" placeholder="PASSWORD" />
       </div>
       <div class="input-field">
-        <span class="input-icon">🔒</span>
+        <span class="input-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+            <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
+          </svg>
+        </span>
         <input type="password" placeholder="REPEAT PASSWORD" />
       </div>
     </div>
+
     <button class="btn-do-signup" @click="$emit('signup')">SIGN UP</button>
   </div>
 </template>
@@ -28,111 +49,98 @@
 defineProps<{ active: boolean }>();
 
 defineEmits<{
-  (e: 'back'): void;
   (e: 'signup'): void;
 }>();
 </script>
 
 <style>
 .signup-screen {
-  background: var(--bg);
-  align-items: center;
+  justify-content: space-between;
   flex-direction: column;
+  padding: 74px 22px 84px;
 }
 
 .signup-title {
   font-family: var(--font-title);
-  font-size: 52px;
-  color: #e02626;
+  font-size: clamp(56px, 9vw, 74px);
+  color: #f02424;
   text-align: center;
-  width: 292px;
-  position: absolute;
-  top: 215px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-shadow: 0 0 40px rgba(196, 13, 13, 0.5);
+  line-height: 0.98;
+  letter-spacing: 1px;
+  margin-top: 98px;
 }
 
 .signup-fields {
-  position: absolute;
-  top: 586px;
-  left: 20px;
-  right: 20px;
+  width: 100%;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 12px;
 }
 
 .input-field {
-  height: 62px;
+  height: 60px;
   border: 1px solid var(--red);
-  border-radius: 15px;
-  background: rgba(110, 35, 35, 0.05);
+  border-radius: 14px;
+  background: #050101;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 20px;
-  color: var(--red-dark);
+  gap: 14px;
+  padding: 0 18px;
+  color: #d70707;
   font-family: var(--font-caps);
-  font-size: 22px;
+  font-size: 17px;
   cursor: text;
   transition: border-color 0.2s, background 0.2s;
 }
 
 .input-field:focus-within {
-  border-color: #e02626;
-  background: rgba(110, 35, 35, 0.15);
+  border-color: #f12424;
 }
 
 .input-field input {
   background: transparent;
   border: none;
   outline: none;
-  color: #e02626;
+  color: #d60707;
   font-family: var(--font-caps);
-  font-size: 22px;
+  font-size: 17px;
   flex: 1;
-  letter-spacing: 1px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
 }
 
 .input-field input::placeholder {
-  color: var(--red-dark);
+  color: #6b0909;
 }
 
 .input-icon {
-  font-size: 18px;
-  opacity: 0.7;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d70707;
+  opacity: 0.95;
+}
+
+.input-icon svg {
+  width: 21px;
+  height: 21px;
 }
 
 .btn-do-signup {
-  position: absolute;
-  top: 809px;
-  left: 20px;
-  width: 400px;
-  height: 62px;
-  border-radius: 15px;
-  background: linear-gradient(90deg, #c40d0d, #8c0a0a, #900);
-  box-shadow: 0 6px 21px -9px red;
+  width: 100%;
+  height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #d50f13, #b30008 90%);
+  box-shadow: 0 12px 22px -12px rgba(255, 0, 0, 0.9);
   border: none;
   cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 42px;
+  margin-top: 18px;
+  font-family: var(--font-title);
+  font-size: 22px;
   color: white;
-  letter-spacing: 2px;
-}
-
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: none;
-  border: none;
-  color: var(--text-red);
-  font-size: 28px;
-  cursor: pointer;
-  font-family: var(--font-body);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  letter-spacing: 1px;
 }
 </style>

@@ -7,7 +7,9 @@
 
     <div class="hero-card">
       <div class="hero-top">
-        <div class="hero-avatar">🧔🏾</div>
+        <div class="hero-avatar">
+          <img src="/ganjagod.png" alt="Ganjagod avatar" class="hero-avatar-img" />
+        </div>
         <div class="hero-meta">
           <div class="hero-name">Lord Ganja</div>
           <div class="hero-role">Ancient Hunter</div>
@@ -30,7 +32,9 @@
       <div v-for="stat in coreAttributes" :key="stat.name" class="core-item">
         <div class="core-row">
           <div class="core-left">
-            <div class="core-icon">{{ stat.icon }}</div>
+            <div class="core-icon">
+              <img :src="stat.icon" :alt="stat.name" class="core-icon-img" />
+            </div>
             <div>
               <div class="core-name">{{ stat.name }}</div>
               <div class="core-value">{{ stat.current }}/{{ stat.max }}</div>
@@ -77,12 +81,12 @@ const xpMax = ref(69000);
 const xpPercent = computed(() => Math.min(100, (xpCurrent.value / xpMax.value) * 100));
 
 const coreAttributes = ref<CoreAttribute[]>([
-  { name: 'Hunter power', icon: '✶', current: 847, max: 1000, color: '#e11a1a' },
-  { name: 'Strenght', icon: '✊', current: 234, max: 500, color: '#df5f0a' },
-  { name: 'Endurance', icon: '🦵', current: 189, max: 300, color: '#f08a10' },
-  { name: 'Vitality', icon: '🫀', current: 445, max: 600, color: '#d92748' },
-  { name: 'Vigor', icon: '🧠', current: 312, max: 400, color: '#1e9b2f' },
-  { name: 'Luck', icon: '🥚', current: 670, max: 690, color: '#e5d75f' },
+  { name: 'Hunter power', icon: '/stats/para_faith.webp', current: 847, max: 1000, color: '#e11a1a' },
+  { name: 'Strenght', icon: '/stats/para_str_large.webp', current: 234, max: 500, color: '#df5f0a' },
+  { name: 'Endurance', icon: '/stats/para_endurance.webp', current: 189, max: 300, color: '#f08a10' },
+  { name: 'Vitality', icon: '/stats/para_vit.webp', current: 445, max: 600, color: '#d92748' },
+  { name: 'Vigor', icon: '/stats/para_vig.webp', current: 312, max: 400, color: '#1e9b2f' },
+  { name: 'Luck', icon: '/stats/dsiiiluck.webp', current: 670, max: 690, color: '#e5d75f' },
 ]);
 
 const increaseStat = (statName: string) => {
@@ -152,7 +156,14 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  overflow: hidden;
+}
+
+.hero-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .hero-name {
@@ -248,14 +259,20 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
   width: 36px;
   height: 36px;
   border-radius: 2px;
-  background: linear-gradient(145deg, #d5c8a2, #8a7957);
-  color: #31230f;
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   border: 1px solid #5f4a24;
   box-shadow: inset 0 0 0 1px rgba(32, 22, 9, 0.35);
+  overflow: hidden;
+}
+
+.core-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .core-name {

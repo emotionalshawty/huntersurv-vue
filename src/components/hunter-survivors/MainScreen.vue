@@ -3,7 +3,9 @@
     <div class="topbar">
       <div class="user-info">
         <div class="avatar-wrap">
-          <div class="avatar">🧔🏾</div>
+          <div class="avatar">
+            <img src="/ganjagod.png" alt="Ganjagod avatar" class="avatar-img" />
+          </div>
         </div>
         <div class="user-meta">
           <div class="user-name">Lord Ganja</div>
@@ -116,9 +118,16 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
   border: 2px solid #400b0e;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .user-meta {
