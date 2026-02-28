@@ -95,8 +95,23 @@ const getAvatarUrl = (name: string) => {
     return '/avatars/dbrotherhood.png';
   }
 
-  const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=1a0505`;
+  if (normalized.includes('lord ganja')) {
+    return '/ganjagod.png';
+  }
+
+  if (normalized.includes('astarion')) {
+    return '/avatars/astarion.png';
+  }
+
+  if (normalized.includes('hevnoraak')) {
+    return '/avatars/Hevnoraak_Mask.webp';
+  }
+
+  if (normalized.includes('ordinator')) {
+    return '/avatars/ordinator.jpg';
+  }
+
+  
 };
 
 const openChat = (chat: ChatEntry) => {
