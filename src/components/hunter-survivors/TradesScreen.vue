@@ -33,7 +33,9 @@
       <div v-for="item in visibleTrades" :key="item.name" class="trade-item">
         <div class="trade-top">
           <div class="trade-left">
-            <div class="trade-img">{{ item.icon }}</div>
+            <div class="trade-img">
+              <img :src="item.icon" :alt="item.name" class="trade-icon" />
+            </div>
             <div class="trade-info">
               <div class="trade-name">{{ item.name }}</div>
               <div class="trade-type">{{ item.type }}</div>
@@ -232,8 +234,15 @@ const visibleTrades = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.trade-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .trade-info {

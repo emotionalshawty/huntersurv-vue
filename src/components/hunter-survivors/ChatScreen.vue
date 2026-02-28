@@ -111,7 +111,8 @@ const getAvatarUrl = (name: string) => {
     return '/avatars/ordinator.jpg';
   }
 
-  
+  const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=1a0505`;
 };
 
 const openChat = (chat: ChatEntry) => {

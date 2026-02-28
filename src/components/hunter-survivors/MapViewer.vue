@@ -10,8 +10,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-
-// Map image path - place your map image in public/community-map.png
 const MAP_PATH = '/community-map.png';
 
 const mapUrl = ref<string>('');

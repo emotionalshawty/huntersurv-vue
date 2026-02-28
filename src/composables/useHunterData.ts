@@ -86,18 +86,18 @@ const combatStats: CombatStat[] = [
 const tradeTabs = ['All Items', 'Weapons', 'Armor', 'Other'];
 
 const allTrades: TradeItem[] = [
-  { name: 'Balder Armor', type: 'Armor', price: '2000', icon: '🛡️', cat: 'Armor' },
-  { name: 'Dusk Crown Ring', type: 'Ring', price: '670', icon: '💍', cat: 'Other' },
-  { name: 'Blue Eye Orb', type: 'Orb', price: '1349', icon: '👁️', cat: 'Other' },
-  { name: 'Fire Keeper Soul', type: 'Soul', price: '7000', icon: '🔥', cat: 'Other' },
-  { name: "Priscilla's Dagger", type: 'Weapon', price: '890', icon: '🗡️', cat: 'Weapons' },
-  { name: 'Oolacile Ivory Catalyst', type: 'Weapon', price: '1470', icon: '⚗️', cat: 'Weapons' },
-  { name: 'Cursed Greatsword of Artorias', type: 'Weapon', price: '5900', icon: '⚔️', cat: 'Weapons' },
-  { name: "Channeler's Trident", type: 'Weapon', price: '4350', icon: '🔱', cat: 'Weapons' },
-  { name: 'Black Knight Halberd', type: 'Weapon', price: '2100', icon: '🪓', cat: 'Weapons' },
-  { name: "Brave's Battlewear", type: 'Armor', price: '1760', icon: '🥋', cat: 'Armor' },
-  { name: 'Blue Festive Hood', type: 'Armor', price: '250', icon: '🪖', cat: 'Armor' },
-  { name: 'Death Knight Helm', type: 'Armor', price: '1500', icon: '💀', cat: 'Armor' },
+  { name: 'Crest Shield', type: 'Shield', price: '2000', icon: '/assets/Icons/Shields/Crest_Shield.png', cat: 'Armor' },
+  { name: 'Dusk Crown Ring', type: 'Ring', price: '670', icon: '/assets/Icons/Rings/Dusk_Crown_Ring.png', cat: 'Other' },
+  { name: 'Master Key', type: 'Key Item', price: '1349', icon: '/assets/Icons/Keys/Master_Key.png', cat: 'Other' },
+  { name: 'Fire Keeper Soul', type: 'Soul', price: '7000', icon: '/assets/Icons/Consumables/Firekeeper_Soul.png', cat: 'Other' },
+  { name: "Priscilla's Dagger", type: 'Dagger', price: '890', icon: '/assets/Icons/Weapons/Priscillas_Dagger.png', cat: 'Weapons' },
+  { name: 'Oolacile Ivory Catalyst', type: 'Catalyst', price: '1470', icon: '/assets/Icons/Weapons/Oolacile_Ivory_Catalyst.png', cat: 'Weapons' },
+  { name: 'Greatsword of Artorias', type: 'Greatsword', price: '5900', icon: '/assets/Icons/Weapons/Greatsword_of_Artorias.png', cat: 'Weapons' },
+  { name: "Channeler's Trident", type: 'Trident', price: '4350', icon: '/assets/Icons/Weapons/Channelers_Trident.png', cat: 'Weapons' },
+  { name: 'Black Knight Halberd', type: 'Halberd', price: '2100', icon: '/assets/Icons/Weapons/Black_Knight_Halberd.png', cat: 'Weapons' },
+  { name: 'Helm of Artorias', type: 'Helm', price: '1760', icon: '/assets/Icons/Helmets/Helm_of_Artorias.png', cat: 'Armor' },
+  { name: 'Great Lord Crown', type: 'Crown', price: '250', icon: '/assets/Icons/Helmets/Great_Lord_Crown.png', cat: 'Armor' },
+  { name: "Havel's Ring", type: 'Ring', price: '1500', icon: '/assets/Icons/Rings/Havels_Ring.png', cat: 'Other' },
 ];
 
 const chats: ChatEntry[] = [
