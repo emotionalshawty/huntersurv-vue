@@ -50,7 +50,9 @@
         <div class="inv-link" @click="$emit('navigate', 'profile')">Full Inventory</div>
       </div>
       <div class="inv-grid">
-        <div v-for="item in inventory" :key="item" class="inv-slot">{{ item }}</div>
+        <div v-for="(item, index) in inventory" :key="`${item}-${index}`" class="inv-slot">
+          <img :src="item" alt="Inventory item" class="inv-icon" />
+        </div>
       </div>
     </div>
   </div>
@@ -357,10 +359,16 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 25px;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
-  text-shadow: 0 0 8px rgba(255, 216, 160, 0.35);
+}
+
+.inv-icon {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 170, 130, 0.2));
+  pointer-events: none;
 }
 
 .inv-slot:hover {

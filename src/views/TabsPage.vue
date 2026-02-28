@@ -1,5 +1,5 @@
 <template>
-  <ion-page>
+  <ion-page @touchstart="onTouchStart" @touchend="onTouchEnd" @touchcancel="onTouchCancel">
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom" class="hs-tab-bar">
@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router';
 import {
   IonIcon,
   IonPage,
@@ -39,6 +40,62 @@ import {
   homeOutline,
   personOutline,
 } from 'ionicons/icons';
+
+const router = useRouter();
+const route = useRoute();
+
+const tabOrder = ['main', 'stats', 'trades', 'chat', 'profile'] as const;
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchTracking = false;
+
+const getCurrentTabIndex = () => {
+  const currentPath = route.path;
+  const activeTab = tabOrder.find((tab) => currentPath.startsWith(`/tabs/${tab}`));
+  return activeTab ? tabOrder.indexOf(activeTab) : 0;
+};
+
+const onTouchStart = (event: TouchEvent) => {
+  if (event.touches.length !== 1) {
+    touchTracking = false;
+    return;
+  }
+
+  const touch = event.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  touchTracking = true;
+};
+
+const onTouchCancel = () => {
+  touchTracking = false;
+};
+
+const onTouchEnd = (event: TouchEvent) => {
+  if (!touchTracking || event.changedTouches.length !== 1) {
+    return;
+  }
+
+  touchTracking = false;
+  const touch = event.changedTouches[0];
+  const deltaX = touch.clientX - touchStartX;
+  const deltaY = touch.clientY - touchStartY;
+
+  if (Math.abs(deltaX) < 65 || Math.abs(deltaX) < Math.abs(deltaY)) {
+    return;
+  }
+
+  const direction = deltaX < 0 ? 1 : -1;
+  const currentIndex = getCurrentTabIndex();
+  const nextIndex = Math.min(Math.max(currentIndex + direction, 0), tabOrder.length - 1);
+
+  if (nextIndex === currentIndex) {
+    return;
+  }
+
+  router.push(`/tabs/${tabOrder[nextIndex]}`);
+};
 </script>
 
 <style>

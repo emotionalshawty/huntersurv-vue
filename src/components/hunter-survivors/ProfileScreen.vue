@@ -28,10 +28,26 @@
     </div>
     <div class="section-card">
       <div class="inv-header">
-        <div class="inv-title">Inventory</div>
+        <div class="inv-title" @click="openFullInventoryModal">Inventory</div>
       </div>
-      <div class="inv-grid">
-        <div v-for="item in inventory" :key="item" class="inv-slot">{{ item }}</div>
+      <div class="inv-grid" @click="openFullInventoryModal">
+        <div v-for="(item, index) in inventory" :key="`${item}-${index}`" class="inv-slot">
+          <img :src="item" alt="Inventory item" class="inv-icon" />
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showFullInventoryModal" class="full-inv-overlay" @click.self="closeFullInventoryModal">
+      <div class="full-inv-modal">
+        <div class="full-inv-header">
+          <div class="full-inv-title">Inventory</div>
+          <button class="full-inv-close" @click="closeFullInventoryModal">✕</button>
+        </div>
+        <div class="full-inv-grid">
+          <div v-for="(item, index) in fullInventoryItems" :key="`full-${item}-${index}`" class="full-inv-slot">
+            <img :src="item" alt="Inventory item" class="full-inv-icon" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -71,14 +87,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   active: boolean;
   inventory: string[];
+  fullInventory?: string[];
 }>();
 
 const showEditModal = ref(false);
+const showFullInventoryModal = ref(false);
 
 const profileName = ref('Lord Ganja');
 const profileTitle = ref('Ancient Hunter');
@@ -108,6 +126,23 @@ const saveProfile = () => {
   profileEmail.value = draftEmail.value.trim() || profileEmail.value;
   avatarEmoji.value = draftAvatarEmoji.value;
   showEditModal.value = false;
+};
+
+const fullInventoryItems = computed(() => {
+  if (props.fullInventory && props.fullInventory.length > 0) {
+    return props.fullInventory;
+  }
+
+  const fallback = props.inventory.length > 0 ? props.inventory : [];
+  return Array.from({ length: 55 }, (_, index) => fallback[index % Math.max(fallback.length, 1)]);
+});
+
+const openFullInventoryModal = () => {
+  showFullInventoryModal.value = true;
+};
+
+const closeFullInventoryModal = () => {
+  showFullInventoryModal.value = false;
 };
 </script>
 
@@ -276,6 +311,7 @@ const saveProfile = () => {
 .inv-title {
   font-size: 22px;
   color: white;
+  cursor: pointer;
 }
 
 .inv-grid {
@@ -293,14 +329,90 @@ const saveProfile = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
+}
+
+.inv-icon {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 170, 130, 0.2));
+  pointer-events: none;
 }
 
 .inv-slot:hover {
   border-color: var(--red);
   background: rgba(189, 15, 15, 0.4);
+}
+
+.full-inv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14px 10px;
+}
+
+.full-inv-modal {
+  width: min(100%, 430px);
+  border: 1px solid #5d1111;
+  background: #050505;
+  padding: 10px 10px 12px;
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+}
+
+.full-inv-modal::-webkit-scrollbar {
+  display: none;
+}
+
+.full-inv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.full-inv-title {
+  font-family: var(--font-title);
+  color: #f0e4de;
+  font-size: 18px;
+}
+
+.full-inv-close {
+  border: none;
+  background: transparent;
+  color: #ff1f1f;
+  font-size: 36px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.full-inv-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.full-inv-slot {
+  aspect-ratio: 1 / 1;
+  border: 1px solid #a61010;
+  background: radial-gradient(circle at 50% 44%, rgba(255, 52, 52, 0.34) 0%, rgba(84, 0, 0, 0.72) 56%, rgba(36, 0, 0, 0.98) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-inv-icon {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 170, 130, 0.2));
+  pointer-events: none;
 }
 
 .edit-modal-overlay {

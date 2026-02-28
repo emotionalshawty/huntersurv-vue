@@ -23,23 +23,47 @@ const challenges = [
   { text: 'Defeat 1 boss creature', progress: 100 },
 ];
 
-const inventory = [
-  '⚔️',
-  '🗡️',
-  '🪓',
-  '📜',
-  '✨',
-  '🛡️',
-  '💀',
-  '🔮',
-  '👁️',
-  '🌙',
-  '🔥',
-  '💎',
-  '⚗️',
-  '🗝️',
-  '💍',
+const inventoryIconPool = [
+  '/assets/Icons/Weapons/Greatsword_of_Artorias.png',
+  '/assets/Icons/Weapons/Abyss_Greatsword.png',
+  '/assets/Icons/Weapons/Black_Knight_Halberd.png',
+  '/assets/Icons/Weapons/Priscillas_Dagger.png',
+  '/assets/Icons/Weapons/Oolacile_Ivory_Catalyst.png',
+  '/assets/Icons/Weapons/Channelers_Trident.png',
+  '/assets/Icons/Rings/Dusk_Crown_Ring.png',
+  '/assets/Icons/Rings/Havels_Ring.png',
+  '/assets/Icons/Shields/Crest_Shield.png',
+  '/assets/Icons/Shields/Grass_Crest_Shield.png',
+  '/assets/Icons/Upgrades/Twinkling_Titanite.png',
+  '/assets/Icons/Upgrades/Titanite_Chunk.png',
+  '/assets/Icons/Souls/Regular_Boss_Soul.png',
+  '/assets/Icons/Souls/Soul_of_Artorias.png',
+  '/assets/Icons/Consumables/Estus_Flask.png',
+  '/assets/Icons/Consumables/Humanity.png',
+  '/assets/Icons/Consumables/Firekeeper_Soul.png',
+  '/assets/Icons/Consumables/Black_Firebomb.png',
+  '/assets/Icons/Keys/Crest_of_Artorias.png',
+  '/assets/Icons/Keys/Master_Key.png',
+  '/assets/Icons/Magic/Great_Fireball.png',
+  '/assets/Icons/Magic/Great_Lightning_Spear.png',
+  '/assets/Icons/Magic/Soul_Spear.png',
+  '/assets/Icons/Helmets/Helm_of_Artorias.png',
+  '/assets/Icons/Helmets/Great_Lord_Crown.png',
+  '/assets/Icons/Embers/Very_Large_Ember.png',
+  '/assets/Icons/Embers/Chaos_Flame_Ember.png',
 ];
+
+const pickRandomInventoryIcons = (count: number) => {
+  return Array.from({ length: count }, () => {
+    const randomIndex = Math.floor(Math.random() * inventoryIconPool.length);
+    return inventoryIconPool[randomIndex];
+  });
+};
+
+const inventory = pickRandomInventoryIcons(15);
+const fullInventory = pickRandomInventoryIcons(55);
+
+
 
 const attributes: Attribute[] = [
   { name: 'Vitality', icon: '❤️', val: 78, color: '#c40d0d' },
@@ -136,6 +160,7 @@ export const useHunterData = () => {
   return {
     challenges,
     inventory,
+    fullInventory,
     attributes,
     combatStats,
     tradeTabs,
