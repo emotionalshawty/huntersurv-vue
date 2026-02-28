@@ -3,11 +3,11 @@
     <div class="create-chat-panel">
       <div class="panel-header">
         <div class="panel-title">Add Hunter Brothers</div>
-        <button class="close-btn" type="button" @click="emit('close')">✕</button>
+        <IonButton class="close-btn" fill="clear" @click="emit('close')">✕</IonButton>
       </div>
 
       <div class="search-wrap">
-        <input v-model="searchQuery" type="text" placeholder="Search Username..." />
+        <InputText v-model="searchQuery" type="text" placeholder="Search Username..." />
       </div>
 
       <div class="suggested-title">Suggested Hunters</div>
@@ -39,6 +39,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { IonButton } from '@ionic/vue';
+import InputText from 'primevue/inputtext';
 
 defineProps<{
   getAvatarUrl: (name: string) => string;
@@ -109,12 +111,18 @@ const filteredHunters = computed(() => {
 }
 
 .close-btn {
-  border: none;
-  background: transparent;
-  color: #a773cf;
+  --background: transparent;
+  --background-hover: transparent;
+  --color: #a773cf;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-size: 14px;
   cursor: pointer;
   line-height: 1;
+  text-transform: none;
+  margin: 0;
 }
 
 .search-wrap {

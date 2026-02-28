@@ -1,12 +1,9 @@
 <template>
   <div class="messages-view">
     <div class="messages-header">
-      <div class="back-btn" @click="emit('back')">
-        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-      </div>
+      <IonButton fill="clear" class="back-btn" @click="emit('back')">
+        <IonIcon :icon="arrowBackOutline" />
+      </IonButton>
       <div class="header-avatar-wrapper">
         <img :src="getAvatarUrl(selectedChat.name)" class="header-avatar" />
       </div>
@@ -39,26 +36,26 @@
 
     <div class="message-input-area">
       <div class="input-wrapper">
-        <input
+        <InputText
           type="text"
-          :value="newMessage"
+          :modelValue="newMessage"
           placeholder="Type a message..."
-          @input="onInput"
+          @update:modelValue="(val: string | undefined) => emit('update:newMessage', val ?? '')"
           @keyup.enter="emit('send')"
         />
       </div>
-      <button class="send-btn" @click="emit('send')" :disabled="!newMessage.trim()">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      </button>
+      <IonButton fill="clear" class="send-btn" @click="emit('send')" :disabled="!newMessage.trim()">
+        <IonIcon :icon="sendOutline" />
+      </IonButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue';
+import { IonButton, IonIcon } from '@ionic/vue';
+import { arrowBackOutline, sendOutline } from 'ionicons/icons';
+import InputText from 'primevue/inputtext';
 
 type ChatEntry = {
   name: string;
@@ -90,11 +87,6 @@ const emit = defineEmits<{
 }>();
 
 const messagesContainer = ref<HTMLElement | null>(null);
-
-const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  emit('update:newMessage', target.value);
-};
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -136,7 +128,14 @@ watch(
 }
 
 .back-btn {
-  color: #ff2a2a;
+  --background: transparent;
+  --background-hover: transparent;
+  --border-width: 0;
+  --color: #ff2a2a;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -144,11 +143,13 @@ watch(
   grid-column: 1;
   width: 34px;
   height: 34px;
+  min-height: 34px;
+  text-transform: none;
+  margin: 0;
 }
 
-.back-btn svg {
-  width: 24px;
-  height: 24px;
+.back-btn ion-icon {
+  font-size: 24px;
 }
 
 .header-avatar-wrapper {
@@ -208,11 +209,11 @@ watch(
   .back-btn {
     width: 30px;
     height: 30px;
+    min-height: 30px;
   }
 
-  .back-btn svg {
-    width: 22px;
-    height: 22px;
+  .back-btn ion-icon {
+    font-size: 22px;
   }
 
   .header-avatar-wrapper,
@@ -336,24 +337,33 @@ watch(
 .send-btn {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  background: #ff2a2a;
-  color: #050101;
-  border: none;
+  min-height: 38px;
+  --border-radius: 50%;
+  --background: #ff2a2a;
+  --background-hover: #ff2a2a;
+  --color: #050101;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
+  text-transform: none;
+  margin: 0;
 }
 
-.send-btn:hover:not(:disabled) {
-  background: #ff2a2a;
+.send-btn ion-icon {
+  font-size: 20px;
 }
 
-.send-btn:disabled {
-  background: #3a0a0a;
-  color: #1a0505;
+.send-btn:disabled,
+.send-btn[disabled] {
+  --background: #3a0a0a;
+  --color: #1a0505;
   cursor: not-allowed;
+  opacity: 1;
 }
 </style>

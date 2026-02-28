@@ -20,7 +20,10 @@
     "@capacitor/status-bar": "8.0.1",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
+    "@primeuix/themes": "^2.0.3",
+    "@primevue/themes": "^4.5.4",
     "ionicons": "^7.0.0",
+    "primevue": "^4.5.4",
     "vue": "^3.3.0",
     "vue-advanced-chat": "^2.1.2",
     "vue-router": "^4.2.0"

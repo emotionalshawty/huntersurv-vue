@@ -1,12 +1,12 @@
 <template>
   <div :class="['screen', 'notif-page', { active: active }]">
     <div class="page-header notif-header">
-      <button class="notif-back-btn" type="button" @click="$emit('back')" title="Back to Main">✕</button>
+      <IonButton fill="clear" class="notif-back-btn" type="button" @click="$emit('back')" title="Back to Main">✕</IonButton>
       <div>
         <div class="page-header-title">Notifications</div>
         <div class="page-header-sub">Whispers are arriving to you</div>
       </div>
-      <button class="notif-header-action" @click="$emit('markAllRead')">Mark All Read</button>
+      <IonButton fill="clear" class="notif-header-action" @click="$emit('markAllRead')">Mark All Read</IonButton>
     </div>
     <div class="notif-item" v-for="n in notifications" :key="n.title">
       <div class="notif-item-title">{{ n.title }}</div>
@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
+
 defineProps<{
   active: boolean;
   notifications: Array<{ title: string; sub: string; time: string; unread: boolean }>;
@@ -49,32 +51,46 @@ defineEmits<{
 .notif-back-btn {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: #d24b4b;
+  min-height: 32px;
+  --border-radius: 50%;
+  --border-width: 0;
+  --background: transparent;
+  --background-hover: transparent;
+  --color: #d24b4b;
+  --color-hover: #ff6a6a;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-size: 24px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, color 0.2s ease;
   flex-shrink: 0;
-  padding: 0;
   line-height: 1;
+  text-transform: none;
+  margin: 0;
 }
 
 .notif-back-btn:hover {
-  color: #ff6a6a;
   transform: scale(1.1);
 }
 
 .notif-header-action {
-  background: none;
-  border: none;
-  color: var(--text-red);
+  --background: transparent;
+  --background-hover: transparent;
+  --border-width: 0;
+  --color: var(--text-red);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   cursor: pointer;
   font-size: 13px;
+  text-transform: none;
+  margin: 0;
+  min-height: 0;
 }
 
 .notif-item {

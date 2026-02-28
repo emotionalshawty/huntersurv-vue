@@ -6,7 +6,7 @@
       </div>
       <div class="profile-name">{{ profileName }}</div>
       <div class="profile-role">{{ profileTitle }} · Level 420</div>
-      <button class="btn-edit-profile" @click="openEditModal">Edit Profile</button>
+      <IonButton fill="clear" class="btn-edit-profile" @click="openEditModal">Edit Profile</IonButton>
     </div>
     <div class="profile-stats">
       <div class="profile-stat">
@@ -43,7 +43,7 @@
       <div class="full-inv-modal">
         <div class="full-inv-header">
           <div class="full-inv-title">Inventory</div>
-          <button class="full-inv-close" @click="closeFullInventoryModal">✕</button>
+          <IonButton fill="clear" class="full-inv-close" @click="closeFullInventoryModal">✕</IonButton>
         </div>
         <div class="full-inv-grid">
           <div v-for="(item, index) in fullInventoryItems" :key="`full-${item}-${index}`" class="full-inv-slot">
@@ -57,18 +57,18 @@
       <div class="edit-modal">
         <div class="edit-modal-header">
           <div class="edit-modal-title">Edit Profile</div>
-          <button class="edit-close" @click="closeEditModal">✕</button>
+          <IonButton fill="clear" class="edit-close" @click="closeEditModal">✕</IonButton>
         </div>
 
         <div class="edit-avatar-wrap">
           <div class="edit-avatar">
             <img src="/ganjagod.png" alt="Ganjagod avatar" class="edit-avatar-img" />
           </div>
-          <button class="edit-avatar-btn" type="button">🖼 Change Avatar</button>
+          <IonButton fill="clear" class="edit-avatar-btn" type="button">🖼 Change Avatar</IonButton>
         </div>
 
         <div class="edit-field-label">👤 Username</div>
-        <input v-model="draftName" class="edit-input" type="text" />
+        <InputText v-model="draftName" class="edit-input" type="text" />
 
         <div class="edit-field-label">Select Title</div>
         <select v-model="draftTitle" class="edit-input edit-select">
@@ -79,11 +79,11 @@
         </select>
 
         <div class="edit-field-label">✉ Email</div>
-        <input v-model="draftEmail" class="edit-input" type="email" />
+        <InputText v-model="draftEmail" class="edit-input" type="email" />
 
         <div class="edit-actions">
-          <button class="edit-btn edit-btn-cancel" @click="closeEditModal">CANCEL</button>
-          <button class="edit-btn edit-btn-save" @click="saveProfile">SAVE CHANGES</button>
+          <IonButton fill="clear" class="edit-btn edit-btn-cancel" @click="closeEditModal">CANCEL</IonButton>
+          <IonButton fill="clear" class="edit-btn edit-btn-save" @click="saveProfile">SAVE CHANGES</IonButton>
         </div>
       </div>
     </div>
@@ -92,6 +92,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { IonButton } from '@ionic/vue';
+import InputText from 'primevue/inputtext';
 
 const props = defineProps<{
   active: boolean;
@@ -198,19 +200,22 @@ const closeFullInventoryModal = () => {
 
 .btn-edit-profile {
   margin-top: 12px;
-  border: 1px solid #a82020;
-  border-radius: 20px;
-  background: transparent;
-  color: white;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #a82020;
+  --border-radius: 20px;
+  --background: transparent;
+  --background-hover: rgba(196, 13, 13, 0.2);
+  --color: white;
+  --padding-start: 22px;
+  --padding-end: 22px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
   font-family: var(--font-body);
   font-size: 14px;
-  padding: 6px 22px;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-edit-profile:hover {
-  background: rgba(196, 13, 13, 0.2);
+  text-transform: none;
+  min-height: 0;
 }
 
 .profile-stats {
@@ -391,12 +396,20 @@ const closeFullInventoryModal = () => {
 }
 
 .full-inv-close {
-  border: none;
-  background: transparent;
-  color: #ff1f1f;
+  --background: transparent;
+  --background-hover: transparent;
+  --border-width: 0;
+  --color: #ff1f1f;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-size: 36px;
   line-height: 1;
   cursor: pointer;
+  text-transform: none;
+  margin: 0;
+  min-height: 0;
 }
 
 .full-inv-grid {
@@ -457,12 +470,20 @@ const closeFullInventoryModal = () => {
 }
 
 .edit-close {
-  border: none;
-  background: transparent;
-  color: #ff1f1f;
+  --background: transparent;
+  --background-hover: transparent;
+  --border-width: 0;
+  --color: #ff1f1f;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-size: 34px;
   line-height: 1;
   cursor: pointer;
+  text-transform: none;
+  margin: 0;
+  min-height: 0;
 }
 
 .edit-avatar-wrap {
@@ -493,12 +514,20 @@ const closeFullInventoryModal = () => {
 }
 
 .edit-avatar-btn {
-  background: transparent;
-  border: none;
-  color: #ff6969;
+  --background: transparent;
+  --background-hover: transparent;
+  --border-width: 0;
+  --color: #ff6969;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-size: 16px;
   font-family: var(--font-title);
   cursor: pointer;
+  text-transform: none;
+  margin: 0;
+  min-height: 0;
 }
 
 .edit-field-label {
@@ -533,23 +562,34 @@ const closeFullInventoryModal = () => {
 
 .edit-btn {
   height: 44px;
-  border-radius: 6px;
+  min-height: 44px;
+  --border-radius: 6px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-family: var(--font-title);
   font-size: 16px;
   cursor: pointer;
+  text-transform: none;
+  margin: 0;
 }
 
 .edit-btn-cancel {
   width: 44%;
-  border: 1px solid #a82727;
-  background: transparent;
-  color: #ffd3d3;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #a82727;
+  --background: transparent;
+  --background-hover: transparent;
+  --color: #ffd3d3;
 }
 
 .edit-btn-save {
   width: 56%;
-  border: none;
-  background: linear-gradient(90deg, #d10000, #a10000);
-  color: #fff;
+  --border-width: 0;
+  --background: linear-gradient(90deg, #d10000, #a10000);
+  --background-hover: linear-gradient(90deg, #d10000, #a10000);
+  --color: #fff;
 }
 </style>

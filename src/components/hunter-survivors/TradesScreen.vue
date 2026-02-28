@@ -10,7 +10,7 @@
         <circle cx="11" cy="11" r="7"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      <input v-model="searchQuery" type="text" placeholder="Search for items" />
+      <InputText v-model="searchQuery" type="text" placeholder="Search for items" />
     </div>
 
     <div class="wallet-bar">
@@ -45,8 +45,8 @@
         </div>
 
         <div class="trade-actions">
-          <button class="trade-btn trade-btn-buy" type="button">Buy</button>
-          <button class="trade-btn trade-btn-chat" type="button">Open trade chat</button>
+          <IonButton class="trade-btn trade-btn-buy" fill="clear">Buy</IonButton>
+          <IonButton class="trade-btn trade-btn-chat" fill="clear">Open trade chat</IonButton>
         </div>
       </div>
     </div>
@@ -55,6 +55,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { IonButton } from '@ionic/vue';
+import InputText from 'primevue/inputtext';
 
 const props = defineProps<{
   active: boolean;
@@ -281,23 +283,33 @@ const visibleTrades = computed(() => {
 
 .trade-btn {
   height: 32px;
-  border-radius: 6px;
+  min-height: 32px;
+  --border-radius: 6px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-family: var(--font-body);
   font-size: 14px;
   cursor: pointer;
+  text-transform: none;
+  margin: 0;
 }
 
 .trade-btn-buy {
   width: 135px;
-  border: none;
-  color: #fff;
-  background: linear-gradient(90deg, #d10000, #9d0000);
+  --color: #fff;
+  --background: linear-gradient(90deg, #d10000, #9d0000);
+  --background-hover: linear-gradient(90deg, #d10000, #9d0000);
 }
 
 .trade-btn-chat {
   width: 135px;
-  border: 1px solid #b51414;
-  color: #f2d5d5;
-  background: transparent;
+  --color: #f2d5d5;
+  --background: transparent;
+  --background-hover: transparent;
+  --border-color: #b51414;
+  --border-style: solid;
+  --border-width: 1px;
 }
 </style>

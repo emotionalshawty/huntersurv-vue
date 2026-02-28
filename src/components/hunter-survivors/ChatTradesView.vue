@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <button class="create-listing-btn" type="button">CREATE NEW LISTING</button>
+    <IonButton fill="clear" class="create-listing-btn" type="button">CREATE NEW LISTING</IonButton>
 
     <div class="quick-trade-header">
       <div class="quick-trade-title">Quick Trade</div>
@@ -44,8 +44,8 @@
         </div>
 
         <div class="request-actions">
-          <button class="trade-action accept" type="button">ACCEPT</button>
-          <button class="trade-action deny" type="button">DENY</button>
+          <IonButton fill="clear" class="trade-action accept" type="button">ACCEPT</IonButton>
+          <IonButton fill="clear" class="trade-action deny" type="button">DENY</IonButton>
         </div>
       </div>
     </div>
@@ -53,6 +53,8 @@
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
+
 const quickOffers = [
   {
     name: 'Thelegend27',
@@ -148,17 +150,23 @@ const quickOffers = [
 .create-listing-btn {
   display: block;
   width: calc(100% - 64px);
+  min-height: 0;
   margin: 0 auto 14px;
-  border: none;
-  border-radius: 12px;
-  padding: 13px 10px;
+  --border-width: 0;
+  --border-radius: 12px;
+  --background: linear-gradient(160deg, #a31e2e, #db0013 58%, #b40010 100%);
+  --background-hover: linear-gradient(160deg, #a31e2e, #db0013 58%, #b40010 100%);
+  --color: #f5e8e8;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 13px;
+  --padding-bottom: 13px;
   font-family: var(--font-title, serif);
   font-size: 20px;
   line-height: 1;
-  color: #f5e8e8;
-  background: linear-gradient(160deg, #a31e2e, #db0013 58%, #b40010 100%);
   letter-spacing: 0.3px;
   cursor: pointer;
+  text-transform: none;
 }
 
 .quick-trade-header {
@@ -273,23 +281,34 @@ const quickOffers = [
 
 .trade-action {
   height: 29px;
-  border-radius: 4px;
+  min-height: 29px;
+  --border-radius: 4px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-family: var(--font-title, serif);
   font-size: 19px;
   line-height: 1;
   cursor: pointer;
-  background: transparent;
+  text-transform: none;
+  margin: 0;
 }
 
 .trade-action.accept {
-  border: none;
-  color: #d6eee0;
-  background: #0f6a37;
+  --border-width: 0;
+  --background: #0f6a37;
+  --background-hover: #0f6a37;
+  --color: #d6eee0;
 }
 
 .trade-action.deny {
-  border: 1px solid #c42121;
-  color: #f08f8f;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #c42121;
+  --background: transparent;
+  --background-hover: transparent;
+  --color: #f08f8f;
 }
 
 @media (max-width: 420px) {

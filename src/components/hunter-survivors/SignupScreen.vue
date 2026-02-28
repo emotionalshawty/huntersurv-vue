@@ -41,11 +41,13 @@
       </div>
     </div>
 
-    <button class="btn-do-signup" @click="$emit('signup')">SIGN UP</button>
+    <IonButton fill="clear" class="btn-do-signup" @click="$emit('signup')">SIGN UP</IonButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
+
 defineProps<{ active: boolean }>();
 
 defineEmits<{
@@ -132,15 +134,22 @@ defineEmits<{
 .btn-do-signup {
   width: 100%;
   height: 64px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #d50f13, #b30008 90%);
-  box-shadow: 0 12px 22px -12px rgba(255, 0, 0, 0.9);
-  border: none;
+  min-height: 64px;
+  --border-radius: 14px;
+  --background: linear-gradient(180deg, #d50f13, #b30008 90%);
+  --background-hover: linear-gradient(180deg, #d50f13, #b30008 90%);
+  --box-shadow: 0 12px 22px -12px rgba(255, 0, 0, 0.9);
+  --border-width: 0;
+  --color: white;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   cursor: pointer;
   margin-top: 18px;
   font-family: var(--font-title);
   font-size: 22px;
-  color: white;
   letter-spacing: 1px;
+  text-transform: none;
 }
 </style>

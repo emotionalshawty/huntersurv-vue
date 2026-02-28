@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router';
 
 import { IonicVue } from '@ionic/vue';
+import PrimeVue from 'primevue/config';
+import { VueAdvancedChat } from 'vue-advanced-chat';
 import '@ionic/vue/css/core.css';
 import '@ionic/vue/css/normalize.css';
 import '@ionic/vue/css/structure.css';
@@ -19,7 +21,10 @@ import './theme/hunter-survivors.css';
 
 const app = createApp(App)
   .use(IonicVue)
+  .use(PrimeVue, { unstyled: true })
   .use(router);
+
+app.component('VueAdvancedChat', VueAdvancedChat);
 
 router.isReady().then(() => {
   app.mount('#app');

@@ -20,9 +20,11 @@
           <span>Level {{ hunterLevel }}</span>
           <span>{{ xpCurrent.toLocaleString() }}/{{ xpMax.toLocaleString() }} XP</span>
         </div>
-        <div class="attr-bar-bg hero-xp-bg">
-          <div class="attr-bar-fill hero-xp-fill" :style="{ width: xpPercent + '%' }"></div>
-        </div>
+        <ProgressBar
+          :value="xpPercent"
+          :showValue="false"
+          :pt="{ root: { class: 'attr-bar-bg hero-xp-bg' }, value: { class: 'attr-bar-fill hero-xp-fill' } }"
+        />
       </div>
     </div>
 
@@ -40,11 +42,13 @@
               <div class="core-value">{{ stat.current }}/{{ stat.max }}</div>
             </div>
           </div>
-          <button class="plus-btn" @click="increaseStat(stat.name)">+</button>
+          <IonButton fill="clear" class="plus-btn" @click="increaseStat(stat.name)">+</IonButton>
         </div>
-        <div class="attr-bar-bg">
-          <div class="attr-bar-fill" :style="{ width: statPercent(stat) + '%', '--stat-color': stat.color }"></div>
-        </div>
+        <ProgressBar
+          :value="statPercent(stat)"
+          :showValue="false"
+          :pt="{ root: { class: 'attr-bar-bg' }, value: { class: 'attr-bar-fill', style: { '--stat-color': stat.color } } }"
+        />
       </div>
     </div>
 
@@ -60,6 +64,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { IonButton } from '@ionic/vue';
+import ProgressBar from 'primevue/progressbar';
 
 type IncomingAttribute = { name: string; icon: string; val: number; color: string };
 type IncomingCombatStat = { val: string; label: string };
@@ -292,12 +298,22 @@ const statPercent = (stat: CoreAttribute) => Math.min(100, (stat.current / stat.
 .plus-btn {
   width: 31px;
   height: 30px;
-  border: 1px solid rgba(199, 42, 42, 0.3);
-  border-radius: 5px;
-  background: linear-gradient(180deg, #861b1b, #460909);
-  box-shadow: 0 0 8px rgba(255, 77, 77, 0.25);
-  color: white;
+  min-height: 30px;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: rgba(199, 42, 42, 0.3);
+  --border-radius: 5px;
+  --background: linear-gradient(180deg, #861b1b, #460909);
+  --background-hover: linear-gradient(180deg, #861b1b, #460909);
+  --box-shadow: 0 0 8px rgba(255, 77, 77, 0.25);
+  --color: white;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   font-family: var(--font-caps);
+  text-transform: none;
+  margin: 0;
   font-size: 29px;
   line-height: 1;
   cursor: pointer;

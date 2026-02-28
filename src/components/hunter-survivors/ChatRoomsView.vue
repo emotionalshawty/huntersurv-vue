@@ -44,8 +44,8 @@
       </div>
 
       <div class="action-buttons">
-        <button class="action-btn">ADD FRIENDS</button>
-        <button class="action-btn" @click="openCreateChatModal">CREATE CHAT</button>
+        <IonButton class="action-btn" fill="clear">ADD FRIENDS</IonButton>
+        <IonButton class="action-btn" fill="clear" @click="openCreateChatModal">CREATE CHAT</IonButton>
       </div>
 
       <div class="map-section">
@@ -93,6 +93,7 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { IonButton } from '@ionic/vue';
 import ChatTradesView from './ChatTradesView.vue';
 import CreateChatModal from './CreateChatModal.vue';
 
@@ -443,19 +444,20 @@ onBeforeUnmount(() => {
 
 .action-btn {
   flex: 1;
-  background: #a01a1a;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 14px 0;
+  --background: #a01a1a;
+  --background-hover: #c02a2a;
+  --color: white;
+  --border-radius: 8px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  min-height: 48px;
   font-size: 16px;
   font-family: var(--font-title, serif);
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.action-btn:hover {
-  background: #c02a2a;
+  text-transform: none;
+  margin: 0;
 }
 
 .map-section {

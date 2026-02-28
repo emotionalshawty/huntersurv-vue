@@ -13,14 +13,14 @@
         </div>
       </div>
       <div class="topbar-icons">
-        <button class="icon-btn bell-btn" @click="$emit('navigate', 'notifications')" aria-label="Notifications">
+        <IonButton fill="clear" class="icon-btn bell-btn" @click="$emit('navigate', 'notifications')" aria-label="Notifications">
           <span class="icon-glyph">🔔</span>
           <span class="notif-dot notif-dot-one"></span>
           <span class="notif-dot notif-dot-two"></span>
-        </button>
-        <button class="icon-btn" @click="$emit('navigate', 'settings')" aria-label="Settings">
+        </IonButton>
+        <IonButton fill="clear" class="icon-btn" @click="$emit('navigate', 'settings')" aria-label="Settings">
           <span class="icon-glyph">⚙</span>
-        </button>
+        </IonButton>
       </div>
     </div>
 
@@ -33,16 +33,18 @@
     <div class="event-card">
       <div class="event-title">🔥 Blood moon rising</div>
       <div class="event-desc">The blood moon is approaching. Get double coins for the next 24 hours.</div>
-      <button class="btn-join-event">JOIN EVENT</button>
+      <IonButton fill="clear" class="btn-join-event">JOIN EVENT</IonButton>
     </div>
 
     <div class="section-card">
       <div class="section-title daily-title">Daily Challenges</div>
       <div v-for="c in challenges" :key="c.text" class="challenge-item">
         <div class="challenge-text">{{ c.text }}</div>
-        <div class="challenge-bar-bg">
-          <div class="challenge-bar-fill" :style="{ width: c.progress + '%' }"></div>
-        </div>
+        <ProgressBar
+          :value="c.progress"
+          :showValue="false"
+          :pt="{ root: { class: 'challenge-bar-bg' }, value: { class: 'challenge-bar-fill' } }"
+        />
       </div>
     </div>
 
@@ -61,6 +63,9 @@
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
+import ProgressBar from 'primevue/progressbar';
+
 defineProps<{
   active: boolean;
   challenges: Array<{ text: string; progress: number }>;
@@ -156,13 +161,21 @@ defineEmits<{
 }
 
 .icon-btn {
-  background: none;
-  border: none;
-  color: var(--red);
+  --background: transparent;
+  --background-hover: transparent;
+  --color: var(--red);
+  --padding-start: 3px;
+  --padding-end: 3px;
+  --padding-top: 3px;
+  --padding-bottom: 3px;
+  --border-width: 0;
+  --box-shadow: none;
   cursor: pointer;
   font-size: 20px;
   position: relative;
-  padding: 3px;
+  text-transform: none;
+  margin: 0;
+  min-height: 0;
 }
 
 .icon-glyph {
@@ -257,23 +270,26 @@ defineEmits<{
 }
 
 .btn-join-event {
-  background: #992120;
-  border: none;
-  border-radius: 7px;
-  color: white;
+  --background: #992120;
+  --background-hover: #b22727;
+  --background-activated: #992120;
+  --border-radius: 7px;
+  --border-width: 0;
+  --color: white;
+  --padding-start: 28px;
+  --padding-end: 28px;
+  --padding-top: 11px;
+  --padding-bottom: 12px;
+  --box-shadow: none;
   font-family: var(--font-title);
   font-size: 22px;
   line-height: 1;
-  padding: 11px 28px 12px;
   cursor: pointer;
   letter-spacing: 0.4px;
   display: block;
   margin: 0 auto;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.btn-join-event:hover {
-  background: #b22727;
+  text-transform: none;
+  min-height: 0;
 }
 
 .btn-join-event:active {

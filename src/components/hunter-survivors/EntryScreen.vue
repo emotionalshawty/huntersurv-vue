@@ -31,12 +31,14 @@
         />
       </div>
     </div>
-    <button class="btn-login" @click="$emit('login')">LOG IN</button>
-    <button class="btn-signup-outline" @click="$emit('signup')">SIGN UP</button>
+    <IonButton fill="clear" class="btn-login" @click="$emit('login')">LOG IN</IonButton>
+    <IonButton fill="clear" class="btn-signup-outline" @click="$emit('signup')">SIGN UP</IonButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
+
 defineProps<{
   active: boolean;
   email: string;
@@ -143,22 +145,25 @@ const onPasswordInput = (event: Event) => {
 .btn-login {
   width: 100%;
   height: 64px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #d40e13 0%, #b30208 100%);
-  box-shadow: 0 8px 18px -10px rgba(255, 0, 0, 0.95);
-  border: none;
+  min-height: 64px;
+  --border-radius: 18px;
+  --background: linear-gradient(180deg, #d40e13 0%, #b30208 100%);
+  --background-hover: linear-gradient(180deg, #d40e13 0%, #b30208 100%);
+  --background-hover-opacity: 0.9;
+  --box-shadow: 0 8px 18px -10px rgba(255, 0, 0, 0.95);
+  --border-width: 0;
+  --color: white;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   cursor: pointer;
   margin-top: 20px;
   font-family: var(--font-title);
   font-size: 23px;
-  color: white;
   letter-spacing: 0.6px;
   line-height: 1;
-  transition: opacity 0.2s, transform 0.1s;
-}
-
-.btn-login:hover {
-  opacity: 0.9;
+  text-transform: none;
 }
 
 .btn-login:active {
@@ -168,21 +173,25 @@ const onPasswordInput = (event: Event) => {
 .btn-signup-outline {
   width: 100%;
   height: 62px;
-  border-radius: 16px;
-  border: 1px solid #c40d0d;
-  background: #000;
+  min-height: 62px;
+  --border-radius: 16px;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #c40d0d;
+  --background: #000;
+  --background-hover: rgba(196, 13, 13, 0.08);
+  --color: #f6f0ec;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
   cursor: pointer;
   margin-top: 10px;
   font-family: var(--font-title);
   font-size: 21px;
-  color: #f6f0ec;
   letter-spacing: 0.65px;
   line-height: 1;
-  transition: background 0.2s;
-}
-
-.btn-signup-outline:hover {
-  background: rgba(196, 13, 13, 0.08);
+  text-transform: none;
 }
 
 @media (max-height: 780px) {
