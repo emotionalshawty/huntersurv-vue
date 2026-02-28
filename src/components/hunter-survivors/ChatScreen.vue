@@ -69,6 +69,32 @@ const mockMessages: ChatMessage[] = [
 const currentMessages = ref<ChatMessage[]>([...mockMessages]);
 
 const getAvatarUrl = (name: string) => {
+  const normalized = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ');
+
+  if (normalized.includes('shar')) {
+    return '/avatars/shar.jpg';
+  }
+
+  if (normalized.includes('godrick') || normalized.includes('godkick')) {
+    return '/avatars/godrick.png';
+  }
+
+  if (normalized === 'jiub') {
+    return '/avatars/jiub.jpg';
+  }
+
+  if (normalized === 'serana') {
+    return '/avatars/serana.jpg';
+  }
+
+  if (normalized.includes('dark brotherhood')) {
+    return '/avatars/dbrotherhood.png';
+  }
+
   const seed = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=1a0505`;
 };
