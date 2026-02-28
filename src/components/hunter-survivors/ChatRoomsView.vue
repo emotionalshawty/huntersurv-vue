@@ -50,15 +50,31 @@
 
       <div class="map-section">
         <div class="map-title">Community Map</div>
-        <div class="map-container">
-          <img src="https://images.uesp.net/d/df/TR3-map-Morrowind.png" alt="Map" class="map-image" @error="handleImageError" />
-          <div class="map-fallback" v-if="mapError">
-            <div class="map-grid">
-              <div class="map-marker red-square" style="top: 30%; left: 70%;"></div>
-              <div class="map-marker red-square" style="top: 50%; left: 55%;"></div>
-              <div class="map-marker red-triangle" style="top: 85%; left: 45%;"></div>
-              <div class="map-marker red-triangle" style="top: 85%; left: 85%;"></div>
+        <div class="map-container" ref="mapContainer" @wheel.prevent="onMapWheel">
+          <div
+            ref="mapPanLayer"
+            class="map-pan-layer"
+            :class="{ dragging: isDraggingMap }"
+            :style="{ transform: `translate(${mapPan.x}px, ${mapPan.y}px) scale(${currentMapScale})` }"
+            @pointerdown="startMapDrag"
+            @pointermove="onMapDrag"
+            @pointerup="endMapDrag"
+            @pointercancel="endMapDrag"
+          >
+            <img src="/community-map.png" alt="Map" class="map-image" @error="handleImageError" />
+            <div class="map-fallback" v-if="mapError">
+              <div class="map-grid">
+                <div class="map-marker red-square" style="top: 30%; left: 70%;"></div>
+                <div class="map-marker red-square" style="top: 50%; left: 55%;"></div>
+                <div class="map-marker red-triangle" style="top: 85%; left: 45%;"></div>
+                <div class="map-marker red-triangle" style="top: 85%; left: 85%;"></div>
+              </div>
             </div>
+          </div>
+
+          <div class="map-zoom-controls">
+            <button type="button" class="zoom-btn" @click="zoomOutMap">−</button>
+            <button type="button" class="zoom-btn" @click="zoomInMap">+</button>
           </div>
         </div>
       </div>
@@ -76,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import ChatTradesView from './ChatTradesView.vue';
 import CreateChatModal from './CreateChatModal.vue';
 
@@ -100,11 +116,146 @@ const emit = defineEmits<{
   (e: 'select-chat', chat: ChatEntry): void;
 }>();
 
-const mapError = ref(true);
+const mapError = ref(false);
 const showCreateChatModal = ref(false);
+const mapContainer = ref<HTMLElement | null>(null);
+const mapPanLayer = ref<HTMLElement | null>(null);
+const mapPan = ref({ x: 0, y: 0 });
+const mapDragStartPointer = ref({ x: 0, y: 0 });
+const mapDragStartPan = ref({ x: 0, y: 0 });
+const isDraggingMap = ref(false);
+const MAP_BASE_SCALE = 1.7;
+const MIN_MAP_ZOOM = 0.7;
+const MAX_MAP_ZOOM = 2.4;
+const mapZoom = ref(1);
+const currentMapScale = ref(MAP_BASE_SCALE * mapZoom.value);
 
 const handleImageError = () => {
   mapError.value = true;
+};
+
+const getScaledMapSize = (zoom: number) => {
+  const container = mapContainer.value;
+  if (!container) {
+    return { width: 0, height: 0 };
+  }
+  const scale = MAP_BASE_SCALE * zoom;
+  return {
+    width: container.clientWidth * scale,
+    height: container.clientHeight * scale,
+  };
+};
+
+const clampMapPan = (x: number, y: number, zoom = mapZoom.value) => {
+  const container = mapContainer.value;
+  if (!container) {
+    return { x, y };
+  }
+
+  const { width, height } = getScaledMapSize(zoom);
+  const minX = container.clientWidth - width;
+  const minY = container.clientHeight - height;
+
+  return {
+    x: Math.max(minX, Math.min(0, x)),
+    y: Math.max(minY, Math.min(0, y)),
+  };
+};
+
+const centerMapPan = () => {
+  nextTick(() => {
+    const container = mapContainer.value;
+    if (!container) {
+      return;
+    }
+
+    const { width, height } = getScaledMapSize(mapZoom.value);
+    const centeredX = (container.clientWidth - width) / 2;
+    const centeredY = (container.clientHeight - height) / 2;
+    mapPan.value = clampMapPan(centeredX, centeredY);
+    currentMapScale.value = MAP_BASE_SCALE * mapZoom.value;
+  });
+};
+
+const applyMapZoom = (nextZoom: number, focalX?: number, focalY?: number) => {
+  const container = mapContainer.value;
+  if (!container) {
+    return;
+  }
+
+  const clampedZoom = Math.max(MIN_MAP_ZOOM, Math.min(MAX_MAP_ZOOM, nextZoom));
+  if (clampedZoom === mapZoom.value) {
+    return;
+  }
+
+  const oldScale = MAP_BASE_SCALE * mapZoom.value;
+  const newScale = MAP_BASE_SCALE * clampedZoom;
+  const anchorX = focalX ?? container.clientWidth / 2;
+  const anchorY = focalY ?? container.clientHeight / 2;
+
+  const contentX = (anchorX - mapPan.value.x) / oldScale;
+  const contentY = (anchorY - mapPan.value.y) / oldScale;
+
+  const nextPanX = anchorX - (contentX * newScale);
+  const nextPanY = anchorY - (contentY * newScale);
+
+  mapZoom.value = clampedZoom;
+  currentMapScale.value = newScale;
+  mapPan.value = clampMapPan(nextPanX, nextPanY, clampedZoom);
+};
+
+const zoomInMap = () => {
+  applyMapZoom(mapZoom.value + 0.15);
+};
+
+const zoomOutMap = () => {
+  applyMapZoom(mapZoom.value - 0.15);
+};
+
+const onMapWheel = (event: WheelEvent) => {
+  const container = mapContainer.value;
+  if (!container) {
+    return;
+  }
+
+  const rect = container.getBoundingClientRect();
+  const focalX = event.clientX - rect.left;
+  const focalY = event.clientY - rect.top;
+  const direction = event.deltaY > 0 ? -0.12 : 0.12;
+  applyMapZoom(mapZoom.value + direction, focalX, focalY);
+};
+
+const startMapDrag = (event: PointerEvent) => {
+  if (!mapPanLayer.value) {
+    return;
+  }
+  isDraggingMap.value = true;
+  mapDragStartPointer.value = { x: event.clientX, y: event.clientY };
+  mapDragStartPan.value = { ...mapPan.value };
+  mapPanLayer.value.setPointerCapture(event.pointerId);
+};
+
+const onMapDrag = (event: PointerEvent) => {
+  if (!isDraggingMap.value) {
+    return;
+  }
+
+  const deltaX = event.clientX - mapDragStartPointer.value.x;
+  const deltaY = event.clientY - mapDragStartPointer.value.y;
+  mapPan.value = clampMapPan(
+    mapDragStartPan.value.x + deltaX,
+    mapDragStartPan.value.y + deltaY,
+  );
+};
+
+const endMapDrag = (event: PointerEvent) => {
+  if (!mapPanLayer.value) {
+    return;
+  }
+  isDraggingMap.value = false;
+  if (mapPanLayer.value.hasPointerCapture(event.pointerId)) {
+    mapPanLayer.value.releasePointerCapture(event.pointerId);
+  }
 };
 
 const openCreateChatModal = () => {
@@ -126,6 +277,15 @@ const selectSuggestedHunter = (name: string) => {
   });
   showCreateChatModal.value = false;
 };
+
+onMounted(() => {
+  centerMapPan();
+  window.addEventListener('resize', centerMapPan);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', centerMapPan);
+});
 </script>
 
 <style scoped>
@@ -316,6 +476,45 @@ const selectSuggestedHunter = (name: string) => {
   overflow: hidden;
   position: relative;
   background: #8cb4c4;
+}
+
+.map-pan-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.map-pan-layer.dragging {
+  cursor: grabbing;
+}
+
+.map-zoom-controls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #771111;
+  border-radius: 6px;
+  background: rgba(8, 2, 2, 0.86);
+  color: #ea4a4a;
+  font-family: var(--font-title, serif);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .map-image {
